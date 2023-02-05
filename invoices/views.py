@@ -9,9 +9,7 @@ import datetime
 
 
 def index(request):
-    # latest_question_list = Question.objects.order_by('-pub_date')[:5]
-    invoices_list = Invoice.objects.all()
-
+    invoices_list = Invoice.objects.order_by('-created_at')
     context = {
         'invoices_list': invoices_list
     }
@@ -42,16 +40,14 @@ def create_build_invoice(request, id):
     context = {}
     context['invoice'] = invoice
     context['products'] = products
-    print(invoice.client)
+
     if request.method == 'GET':
         invoice_form = InvoiceForm(instance=invoice)
         product_formset  = ProductFormSet(queryset=Product.objects.filter(invoice=invoice))
-        # client_form = ClientSelectForm(initial_client=invoice.client)
         context['product_formset'] = product_formset
         context['invoice_form'] = invoice_form
-        # context['client_form'] = client_form
-
         return render(request, 'invoices/form.html', context)
+
     if request.method == 'POST':
         product_formset = ProductFormSet(request.POST)
         invoice_form = InvoiceForm(request.POST, instance=invoice)
@@ -63,8 +59,6 @@ def create_build_invoice(request, id):
             invoice_form.save()
 
         if product_formset.is_valid:
-
-            # product_formset.cleaned_data
             for product_form in product_formset:
                 product = product_form.save(commit=False)
                 if product_form.cleaned_data == {}:
@@ -72,48 +66,6 @@ def create_build_invoice(request, id):
                 product.invoice = invoice
                 product.save()
 
-
-            # for product_form in product_formset:
-            #
-            #
-
-            #     product = product_form.save(commit=False)
-            #     product.invoice = invoice
-            #     product.save()
-
             return HttpResponseRedirect('/')
 
     return render(request, 'invoices/form.html', context)
-
-
-
-# def add_invoice(request):
-#     if request.method == 'POST':
-#         client = request.POST['client']
-#         company = request.POST['company']
-#
-#
-#         form_invoice = InvoiceForm(request.POST)
-#         form_invoice.fields['client'].queryset = Client.objects.filter(id=client)
-#         form_invoice.fields['company'].queryset = Company.objects.filter(id=company)
-#
-#
-#
-#         if form_invoice.is_valid():
-#
-#             print(form_invoice.save())
-#             return HttpResponseRedirect('/')
-#
-#
-#
-#     else:
-#         form_invoice = InvoiceForm()
-#         # form_products = ProductForm()
-#
-#         context = {
-#             # 'form_products': form_products,
-#             'form_invoice': form_invoice,
-#         }
-#
-#
-#     return render(request, 'invoices/form.html', context)

@@ -19,6 +19,8 @@ class Invoice(models.Model):
     mailed = models.BooleanField(default=False)
     client = models.ForeignKey(Client, null=True, blank=True, on_delete=models.CASCADE)
     company = models.ForeignKey(Company, null=True, blank=True, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
     def __str__(self):

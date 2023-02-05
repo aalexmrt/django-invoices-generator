@@ -10,16 +10,8 @@
   <!-- <h3 class="mb-4 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">Products</h3>
   {{ form_products|crispy }}-->
 
-
-
-
 <div class="w-full max-w-2xl m-auto">
-
-
-
     {{client_form|crispy}}
-
-
 </div>
 
 <div class="w-full max-w-2xl m-auto">
@@ -28,9 +20,16 @@
     {{ product_formset.management_form }}
 
       <div class="product-form">
+
       {% for product in product_formset %}
-      <div>
-        {{product}}
+      <div class="flex w-full md:w-2/2 px-3 mb-6 md:mb-0 gap-4">
+        <div class="md:w-1/2">
+        {{ product.name|as_crispy_field }}
+        </div>
+        <div class="md:w-1/2">
+          {{ product.price|as_crispy_field }}
+        </div>
+
       </div>
 
 
