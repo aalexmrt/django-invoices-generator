@@ -1,0 +1,80 @@
+{% extends 'invoices/base.html' %}
+{% load static %}
+{% block main %}
+<a href={% url 'create_invoice' %} >Add invoice</a>
+{% if invoices_list %}
+
+<table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+ <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+   <tr>
+     <th scope="col" class="p-4">
+       <div class="flex items-center">
+         <p class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+       </div>
+     </th>
+     <th scope="col" class="px-6 py-3">
+       Invoice number
+       </th>
+           <th scope="col" class="px-6 py-3">
+               Date
+           </th>
+           <th scope="col" class="px-6 py-3">
+               Mailed
+           </th>
+           <th scope="col" class="px-6 py-3">
+               Client
+           </th>
+           <th></th>
+       </tr>
+   </thead>
+   <tbody>
+       {% for invoice in invoices_list %}
+           <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+               <td class="w-14 p-4">
+                   <div class="flex items-center">
+                       <form action="/download_invoice_pdf/{{invoice.id}}">
+                         <button><img src="{% static 'images/pdf-icon.png' %}"></button>
+
+                       </form>
+                   </div>
+               </td>
+               <th scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                   <div>
+                       <div class="text-base font-semibold"><a href="{% url 'create_build_invoice' invoice.id %}">{{invoice.number}}</a></div>
+
+                   </div>
+               </th>
+               <td class="px-6 py-4">
+                   {{invoice.date}}
+
+               </td>
+               <td class="px-6 py-4">
+                   {% if invoice.mailed == 1 %}
+                       <div class="flex items-center">
+                           <div class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"></div> Sent
+                       </div>
+                   {% else %}
+                       <div class="flex items-center">
+                           <div class="h-2.5 w-2.5 rounded-full bg-red-400 mr-2"></div> Pending
+                       </div>
+                   {% endif %}
+               </td>
+               <td class="px-6 py-4">
+                   {{invoice.client}}
+               </td>
+               <td class="w-14 p-4">
+                   <div class="flex items-center">
+                       <form action="/send_invoice_mail/{{invoice.id}}">
+                           <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Send</button>
+                       </form>
+                   </div>
+               </td>
+           </tr>
+
+       {% endfor %}
+   </tbody>
+</table>
+{% else %}
+   <p>No invoices are available</p>
+{% endif %}
+{% endblock %}

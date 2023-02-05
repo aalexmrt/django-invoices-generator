@@ -1,0 +1,26 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+    <title>Django Tailwind</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		{% tailwind_css %}
+	</head>
+
+  <body>
+    <div class="header-2">
+      <nav class="flex bg-white py-2 md:py-4">
+        <div class="flex w-10/12 w-auto justify-center gap-4 p-2">
+          <a href="{% url 'index' %}" class="font-bold text-xl text-indigo-600">INVOICES</a>
+        </div>
+      </nav>
+    </div>
+    {% block main %}
+
+    {% endblock %}
+
+  </body>
+
+</html>
