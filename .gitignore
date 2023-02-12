@@ -135,3 +135,6 @@ GitHub.sublime-settings
 !.vscode/launch.json
 !.vscode/extensions.json
 .history
+
+# If you are using a Macbook
+.DS_Store
