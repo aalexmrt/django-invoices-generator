@@ -43,26 +43,25 @@ def create_build_invoice(request, id):
 
     if request.method == 'GET':
         invoice_form = InvoiceForm(instance=invoice)
-        product_formset  = ProductFormSet(queryset=Product.objects.filter(invoice=invoice))
+        product_formset  = ProductFormSet(instance=invoice)
         context['product_formset'] = product_formset
         context['invoice_form'] = invoice_form
         return render(request, 'invoices/form.html', context)
 
     if request.method == 'POST':
-        product_formset = ProductFormSet(request.POST)
+        product_formset = ProductFormSet(request.POST, instance=invoice)
         invoice_form = InvoiceForm(request.POST, instance=invoice)
 
         # client_form = ClientSelectForm(request.POST, initial_client=invoice.client, instance=invoice)
 
-        if invoice_form.is_valid:
-            # client_form.save()
+        if invoice_form.is_valid():
             invoice_form.save()
 
-        if product_formset.is_valid:
+        if product_formset.is_valid():
             for product_form in product_formset:
-                product = product_form.save(commit=False)
                 if product_form.cleaned_data == {}:
                     continue
+                product = product_form.save(commit=False)
                 product.invoice = invoice
                 product.save()
 

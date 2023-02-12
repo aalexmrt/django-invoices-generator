@@ -19,9 +19,11 @@
   <h3>Products</h3>
     {{ product_formset.management_form }}
 
+
       <div class="product-form">
 
       {% for product in product_formset %}
+        {{ product.id }}
       <div class="flex w-full md:w-2/2 px-3 mb-6 md:mb-0 gap-4">
         <div class="md:w-1/2">
         {{ product.name|as_crispy_field }}
