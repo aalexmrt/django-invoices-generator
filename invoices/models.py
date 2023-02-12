@@ -33,14 +33,16 @@ class Invoice(models.Model):
         except Invoice.DoesNotExist:
             last_invoice = None
 
-        today = datetime.date.today()
-        year = today.year
+        try:
+            settings = Settings.objects.get(pk=1)
+        except Invoice.DoesNotExist:
+            settings = None
 
         if last_invoice is None:
-            new_invoice_number = "{}-{:04d}".format(year, 1)
+            new_invoice_number = "{}-{:04d}".format(settings.year, 1)
         else:
             last_invoice = int(last_invoice.number.split("-")[1])
-            new_invoice_number = "{}-{:04d}".format(year, last_invoice + 1)
+            new_invoice_number = "{}-{:04d}".format(settings.year, last_invoice + 1)
 
         return new_invoice_number
 
@@ -56,3 +58,18 @@ class Product(models.Model):
     invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.CASCADE)
     def __str__(self):
             return self.name
+
+class Settings(models.Model):
+    year = models.IntegerField()
+    prefix_invoicing = models.CharField(max_length=50)
+    company = models.ForeignKey(Company, blank=True, null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "Main settings"
+
+    def save(self, *args, **kwargs):
+        if not self.pk and Settings.objects.exists():
+        # if you'll not check for self.pk
+        # then error will also raised in update of exists model
+            raise ValidationError('There is can be only one Settings instance')
+        return super(Settings, self).save(*args, **kwargs)

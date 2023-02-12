@@ -55,7 +55,7 @@ def create_build_invoice(request, id):
         # client_form = ClientSelectForm(request.POST, initial_client=invoice.client, instance=invoice)
 
         if invoice_form.is_valid:
-            # client_form.save()
+
             invoice_form.save()
 
         if product_formset.is_valid:
@@ -63,9 +63,26 @@ def create_build_invoice(request, id):
                 product = product_form.save(commit=False)
                 if product_form.cleaned_data == {}:
                     continue
+                print("hello")
+                print(product_form.cleaned_data)
+                print("hello")
                 product.invoice = invoice
                 product.save()
 
             return HttpResponseRedirect('/')
 
     return render(request, 'invoices/form.html', context)
+
+def download_invoice_pdf(request, id):
+    try:
+        invoice = Invoice.objects.get(id=id)
+        products = Product.objects.filter(invoice=id)
+        pass
+    except:
+        messages.error(request, 'Something went wrong')
+        return HttpResponseRedirect('/')
+
+    context={}
+    context['invoice'] = invoice
+    context['products'] = products
+    return render(request, 'invoices/render_invoice_pdf.html', context)

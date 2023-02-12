@@ -1,0 +1,63 @@
+{% load static %}
+{% block content %}
+<link rel= "stylesheet" type= "text/css" href= "{% static 'invoices/render_invoice_pdf_styles.css' %}">
+<header>
+
+  <div class="invoice-info header-item">
+    <h2 class="title left-margin">FACTURA</h2>
+    <div class="invoice-info-detail small-margins left-margin">
+      <h3>Número:</h3>
+      <p>{{invoice.number}}</p>
+      <div class="break"></div> <!-- break -->
+      <h3>Fecha:</h3>
+      <p>{{invoice.date|date:"d/m/Y"}}</p>
+    </div>
+  </div>
+
+  <div class="logo header-item">
+    <!-- <img
+  TODO PUT IMAGE OF Company -->
+  </div>
+  <div class="company-data header-item">
+    <p>{{invoice.company.name}}</p>
+    <p>{{invoice.company}}</p>
+    <p>{{invoice.company}} {{invoice.company}} - {{invoice.company}}</p>
+    <p>CIF &emsp; {{invoice.company}}</p>
+  </div>
+
+</header>
+<main>
+  <div class="content-box client-data">
+    <div class="invoice-info-detail item small-margins left-margin">
+      <h3>Cliente:</h3>
+
+      <p>{{invoice.client.name}}</p>
+    </div>
+    <div class="invoice-info-detail item small-margins left-margin">
+      <h3>Domicilio:</h3>
+      <p>{{invoice.client.name}}, {{invoice.client.name}}, {{invoice.client.name}}</p>
+    </div>
+    <div class="invoice-info-detail item small-margins left-margin">
+      <h3>C.I.F:</h3>
+      <p>{{invoice.client.name}}</p>
+    </div>
+  </div>
+
+  <div class="container-table-products">
+    <table id="products" align="center">
+      <thead>
+          <tr class="no-border">
+            {% for header in headers %}
+            <th></th>
+            {%endfor%}
+          </tr>
+          <tr>
+              <th>Concepto</th>
+              <th>Concepto</th>
+              <th>Concepto</th>
+              <th>Concepto</th>
+              <th>Concepto</th>
+          </tr>
+        </thead>
+
+{% endblock %}
