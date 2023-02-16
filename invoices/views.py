@@ -1,12 +1,24 @@
 from django.shortcuts import render, redirect
+import base64
+from django.core.files.base import ContentFile
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
-from invoices.models import Invoice, Client, Company, Product
+from invoices.models import Invoice, Client, Company, Product, DocumentPDF
 from invoices.forms import InvoiceForm, ProductFormSet
 import datetime
 # from .models import Question
+import functools
 
+from django.conf import settings
+from django.views.generic import DetailView
+
+from django_weasyprint import WeasyTemplateResponseMixin
+from django_weasyprint.views import WeasyTemplateResponse
+from django_weasyprint.utils import django_url_fetcher
+
+from django.template.response import TemplateResponse
+from django.views.generic.base import ContextMixin, TemplateResponseMixin, View
 
 def index(request):
     invoices_list = Invoice.objects.order_by('-created_at')
@@ -68,3 +80,28 @@ def create_build_invoice(request, id):
             return HttpResponseRedirect('/')
 
     return render(request, 'invoices/form.html', context)
+
+def invoice_pdf(request, id):
+    try:
+        invoice = Invoice.objects.get(id=id)
+        products = Product.objects.filter(invoice=id)
+        pass
+    except:
+        messages.error(request, 'Something went wrong')
+        return HttpResponseRedirect('/')
+
+    context={}
+    context['invoice'] = invoice
+    context['products'] = products
+
+    view = render(request, 'invoices/invoice_pdf.html', context)
+    pdf_render = WeasyTemplateResponse(request=request, template='invoices/invoice_pdf.html', context=context).rendered_content
+    document_name = "{}-{}-{}.pdf".format(invoice.number, invoice.date, invoice.client)
+    # test = DocumentPDF.objects.filter(pdf_name=document_name)
+    # print(test)
+    created_file = DocumentPDF()
+    created_file.document_pdf.save(document_name, ContentFile(pdf_render))
+    # print(created_file.document_pdf.name)
+
+
+    return render(request, 'invoices/invoice_pdf.html', context)

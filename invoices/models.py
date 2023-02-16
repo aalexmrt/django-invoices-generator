@@ -56,3 +56,16 @@ class Product(models.Model):
     invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.CASCADE)
     def __str__(self):
             return self.name
+
+class DocumentPDF(models.Model):
+
+
+    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.CASCADE)
+    document_pdf = models.FileField(upload_to='invoices_pdf/')
+    # print(document_pdf.name)
+    # pdf_name = str(document_pdf).split("/")[1]
+
+    # def __str__(self):
+    #     return pdf_name
+    # def __str__(self):
+    #     return self.name

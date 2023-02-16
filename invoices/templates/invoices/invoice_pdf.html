@@ -1,0 +1,117 @@
+{% load static %}
+{% block content %}
+<link rel= "stylesheet" type= "text/css" href= "{% static 'invoices/render_invoice_pdf_styles.css' %}">
+<header>
+
+  <div class="invoice-info header-item">
+    <h2 class="title left-margin">FACTURA</h2>
+    <div class="invoice-info-detail small-margins left-margin">
+      <h3>Número:</h3>
+      <p>{{invoice.number}}</p>
+      <div class="break"></div> <!-- break -->
+      <h3>Fecha:</h3>
+      <p>{{invoice.date|date:"d/m/Y"}}</p>
+    </div>
+  </div>
+
+  <div class="logo header-item">
+    <!-- <img
+  TODO PUT IMAGE OF Company -->
+  </div>
+  <div class="company-data header-item">
+    <p>{{invoice.company.name}}</p>
+    <p>{{invoice.company}}</p>
+    <p>{{invoice.company}} {{invoice.company}} - {{invoice.company}}</p>
+    <p>CIF &emsp; {{invoice.company}}</p>
+  </div>
+
+</header>
+<main>
+  <div class="content-box client-data">
+    <div class="invoice-info-detail item small-margins left-margin">
+      <h3>Cliente:</h3>
+
+      <p>{{invoice.client.name}}</p>
+    </div>
+    <div class="invoice-info-detail item small-margins left-margin">
+      <h3>Domicilio:</h3>
+      <p>{{invoice.client.name}}, {{invoice.client.name}}, {{invoice.client.name}}</p>
+    </div>
+    <div class="invoice-info-detail item small-margins left-margin">
+      <h3>C.I.F:</h3>
+      <p>{{invoice.client.name}}</p>
+    </div>
+  </div>
+
+  <div class="container-table-products">
+    <table id="products" align="center">
+      <thead>
+          <tr class="no-border"></tr>
+          <tr>
+              <th>Concepto</th>
+              <th>Concepto</th>
+              <th>Concepto</th>
+              <th>Concepto</th>
+              <th>Concepto</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in '012345678901234'|make_list %}
+          <tr>
+
+            <td>hel</td>
+            <td>hel</td>
+            <td>hel</td>
+            <td>hel</td>
+            <td>hel</td>
+          </tr>
+          {% endfor %}
+          <tr class="no-border"></tr>
+          <tr>
+            <td class="no-border"></td>
+            <td class="no-border"></td>
+            <td class="left-bold-border top-bold-border" colspan="2">Total</td>
+            <td class="top-bold-border">{{invoice.number}}</td>
+          </tr>
+          <tr>
+            <td class="no-border"></td>
+            <td class="no-border"></td>
+            <td class="left-bold-border" colspan="2">Descuento 0%</td>
+            <td class="">{{invoice.number}}</td>
+          </tr>
+          <tr>
+            <td class="no-border"></td>
+            <td class="no-border"></td>
+            <td class="left-bold-border" colspan="2">Base imponible</td>
+            <td class="">0 {{invoice.number}}</td>
+          </tr>
+          <tr>
+            <td class="no-border"></td>
+            <td class="no-border"></td>
+            <td class="left-bold-border" colspan="2">I.V.A 10%</td>
+            <td class="">{{invoice.number}}</td>
+          </tr>
+          <tr>
+            <td class="no-border"></td>
+            <td class="no-border"></td>
+            <td class="left-bold-border" colspan="2">Total</td>
+            <td class="">{{invoice.number}}</td>
+          </tr>
+        </tbody>
+    </table>
+  </div>
+  <div class="content-box payment-data">
+  <div class="payment-info-detail item small-margins">
+  <h3>Forma de pago:</h3>
+  <p>TRANSFERENCIA BANCARIA<br>&emsp;&emsp; IBAN: #TODO</p>
+  </div>
+  </div>
+  </main>
+  <footer>
+  <p>#TODO</p>
+  <p>#TODO</p>
+  <p>#TODO</p>
+  <p>#TODO</p>
+  </footer>
+
+{% endblock %}
