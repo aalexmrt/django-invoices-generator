@@ -2,18 +2,29 @@ from django.db import models
 import datetime
 
 
-class Company(models.Model):
-    name = models.CharField(max_length=200)
+class CommonCompanyInfo(models.Model):
+    name = models.CharField(null=True, blank=True, max_length=100)
+    address = models.CharField(null=True, blank=True, max_length=100)
+    zip_code = models.IntegerField(null=True, blank=True)
+    city = models.CharField(null=True, blank=True, max_length=100)
+    state = models.CharField(null=True, blank=True, max_length=100)
+    company_id_number = models.CharField(null=True, blank=True, max_length=100)
+    bank_account_number = models.CharField(
+        null=True, blank=True, max_length=100)
 
     def __str__(self):
         return self.name
 
+    class Meta:
+        abstract = True
 
-class Client(models.Model):
-    name = models.CharField(max_length=200)
 
-    def __str__(self):
-        return self.name
+class Company(CommonCompanyInfo):
+    pass
+
+
+class Client(CommonCompanyInfo):
+    pass
 
 
 class Invoice(models.Model):
