@@ -56,14 +56,23 @@
           </tr>
         </thead>
         <tbody>
-          {% for i in '012345678901234'|make_list %}
+          {% for product in products%}
           <tr>
 
-            <td>hel</td>
-            <td>hel</td>
-            <td>hel</td>
-            <td>hel</td>
-            <td>hel</td>
+            <td>{{product.name}}</td>
+            <td>{{product.price}}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          {%endfor%}
+          {% for i in empty_rows %}
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
           </tr>
           {% endfor %}
           <tr class="no-border"></tr>

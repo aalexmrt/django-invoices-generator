@@ -1,11 +1,13 @@
 from django.db import models
 import datetime
 
+
 class Company(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
+
 
 class Client(models.Model):
     name = models.CharField(max_length=200)
@@ -13,15 +15,17 @@ class Client(models.Model):
     def __str__(self):
         return self.name
 
+
 class Invoice(models.Model):
     number = models.CharField(null=True, blank=True, max_length=100)
     date = models.DateField(null=True, blank=True)
     mailed = models.BooleanField(default=False)
-    client = models.ForeignKey(Client, null=True, blank=True, on_delete=models.CASCADE)
-    company = models.ForeignKey(Company, null=True, blank=True, on_delete=models.CASCADE)
+    client = models.ForeignKey(
+        Client, null=True, blank=True, on_delete=models.CASCADE)
+    company = models.ForeignKey(
+        Company, null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
 
     def __str__(self):
         return self.number
@@ -47,21 +51,36 @@ class Invoice(models.Model):
     def save(self, *args, **kwargs):
         if self.number is None:
             self.number = self.get_invoice_number()
+        self.company = Company.objects.get(id=1)
         super(Invoice, self).save(*args, **kwargs)
 
 
 class Product(models.Model):
     name = models.CharField(max_length=200)
     price = models.FloatField(null=True, blank=True)
-    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.CASCADE)
+    invoice = models.ForeignKey(
+        Invoice, blank=True, null=True, on_delete=models.CASCADE)
+
     def __str__(self):
-            return self.name
-
-class DocumentPDF(models.Model):
+        return self.name
 
 
-    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.CASCADE)
-    document_pdf = models.FileField(upload_to='invoices_pdf/')
+class DocumentPdf(models.Model):
+
+    file_name = models.CharField(max_length=200)
+    invoice = models.ForeignKey(
+        Invoice, blank=True, null=True, on_delete=models.CASCADE)
+    file_pdf = models.FileField(upload_to='invoices_pdf/')
+
+    # @classmethod
+    # def save_file(self, file_name):
+    #     try:
+    #         document = DocumentPDF.objects.filter(entry_document_pdf_contains="file_name")
+    #     except: DocumentPDF.DoesNotExist:
+    #         document = None
+    #
+    # def save(self, *args, **kwargs):
+    #     if # OPTIMIZE:
     # print(document_pdf.name)
     # pdf_name = str(document_pdf).split("/")[1]
 

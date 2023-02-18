@@ -4,7 +4,7 @@ from django.core.files.base import ContentFile
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
-from invoices.models import Invoice, Client, Company, Product, DocumentPDF
+from invoices.models import Invoice, Client, Company, Product, DocumentPdf
 from invoices.forms import InvoiceForm, ProductFormSet
 import datetime
 # from .models import Question
@@ -81,6 +81,7 @@ def create_build_invoice(request, id):
 
     return render(request, 'invoices/form.html', context)
 
+#TODO merge with the create_build_invoice view
 def invoice_pdf(request, id):
     try:
         invoice = Invoice.objects.get(id=id)
@@ -90,18 +91,21 @@ def invoice_pdf(request, id):
         messages.error(request, 'Something went wrong')
         return HttpResponseRedirect('/')
 
+    empty_rows = 15 - len(products)
+
+
     context={}
     context['invoice'] = invoice
     context['products'] = products
+    context['empty_rows'] = range(empty_rows)
 
     view = render(request, 'invoices/invoice_pdf.html', context)
     pdf_render = WeasyTemplateResponse(request=request, template='invoices/invoice_pdf.html', context=context).rendered_content
-    document_name = "{}-{}-{}.pdf".format(invoice.number, invoice.date, invoice.client)
-    # test = DocumentPDF.objects.filter(pdf_name=document_name)
-    # print(test)
-    created_file = DocumentPDF()
-    created_file.document_pdf.save(document_name, ContentFile(pdf_render))
-    # print(created_file.document_pdf.name)
+    document_name = "{}_{}_{}.pdf".format(invoice.number, invoice.date, invoice.client)
+    created_file =  DocumentPdf.objects.get_or_create(file_name=document_name)[0]
+    created_file.invoice = invoice
+    created_file.file_pdf.delete()
+    created_file.file_pdf.save(document_name, ContentFile(pdf_render))
 
 
     return render(request, 'invoices/invoice_pdf.html', context)
