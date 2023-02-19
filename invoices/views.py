@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.core.files.base import ContentFile
 from django.http import HttpResponseRedirect
-
+from django.db.models import Sum
 from invoices.models import Invoice, Product, DocumentPdf
 from invoices.forms import InvoiceForm, ProductFormSet
 
@@ -54,17 +54,25 @@ def create_build_invoice(request, id):
         invoice_form = InvoiceForm(request.POST, instance=invoice)
 
         if invoice_form.is_valid():
+            invoice_test = context['products'].aggregate(Sum('total'))
+            print(invoice_test)
+            # invoice_form.tax_base = invoice.total_products - invoice.invoice_settings.discount
+            # invoice_form.tax_quantity = invoice.invoice_settings.tax * \
+            #     invoice_form.tax_base
+            # invoice_form.total = invoice_form.tax_base + invoice_form.tax_quantity
             invoice_form.save()
 
         if product_formset.is_valid():
             for product_form in product_formset:
+
                 if product_form.cleaned_data == {}:
                     continue
                 product = product_form.save(commit=False)
                 product.invoice = invoice
+                product.total = product.quantity * product.price
                 product.save()
 
-            return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/')
 
     return render(request, 'invoices/form.html', context)
 
