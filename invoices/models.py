@@ -5,7 +5,7 @@ import datetime
 class CommonCompanyInfo(models.Model):
     name = models.CharField(null=True, blank=True, max_length=100)
     address = models.CharField(null=True, blank=True, max_length=100)
-    zip_code = models.IntegerField(null=True, blank=True)
+    zip_code = models.CharField(null=True, blank=True, max_length=100)
     city = models.CharField(null=True, blank=True, max_length=100)
     state = models.CharField(null=True, blank=True, max_length=100)
     company_id_number = models.CharField(null=True, blank=True, max_length=100)
@@ -37,6 +37,8 @@ class Invoice(models.Model):
         Company, null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    total = models.DecimalField(
+        max_digits=19, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
         return self.number
@@ -66,14 +68,38 @@ class Invoice(models.Model):
         super(Invoice, self).save(*args, **kwargs)
 
 
+class InvoiceSetting(models.Model):
+    company = models.ForeignKey(
+        Company, null=True, blank=True, on_delete=models.CASCADE)
+    # TODO currency =
+    discount = models.DecimalField(
+        max_digits=19, decimal_places=2, null=True, blank=True)
+    tax_base = models.DecimalField(
+        max_digits=19, decimal_places=2, null=True, blank=True)
+
+    def __str__():
+        return "Invoice settings"
+
+
 class Product(models.Model):
     name = models.CharField(max_length=200)
-    price = models.FloatField(null=True, blank=True)
+    quantity = models.DecimalField(
+        max_digits=19, decimal_places=3, null=True, blank=True)
+    price = models.DecimalField(
+        max_digits=19, decimal_places=2, null=True, blank=True)
+    total = models.DecimalField(
+        max_digits=19, decimal_places=2, null=True, blank=True)
     invoice = models.ForeignKey(
         Invoice, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if self.quantity is not None and self.price is not None:
+            self.total = self.quantity * self.price
+
+        super(Product, self).save(*args, **kwargs)
 
 
 class DocumentPdf(models.Model):
@@ -82,20 +108,3 @@ class DocumentPdf(models.Model):
     invoice = models.ForeignKey(
         Invoice, blank=True, null=True, on_delete=models.CASCADE)
     file_pdf = models.FileField(upload_to='invoices_pdf/')
-
-    # @classmethod
-    # def save_file(self, file_name):
-    #     try:
-    #         document = DocumentPDF.objects.filter(entry_document_pdf_contains="file_name")
-    #     except: DocumentPDF.DoesNotExist:
-    #         document = None
-    #
-    # def save(self, *args, **kwargs):
-    #     if # OPTIMIZE:
-    # print(document_pdf.name)
-    # pdf_name = str(document_pdf).split("/")[1]
-
-    # def __str__(self):
-    #     return pdf_name
-    # def __str__(self):
-    #     return self.name

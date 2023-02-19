@@ -58,12 +58,11 @@
         <tbody>
           {% for product in products%}
           <tr>
-
-            <td>{{product.name}}</td>
-            <td>{{product.price}}</td>
+            <td>{{product.name|upper}}</td>
             <td></td>
-            <td></td>
-            <td></td>
+            <td>{{product.quantity}}</td>
+            <td>{{product.price}} €</td>
+            <td class="last-column">{{product.total}} €</td>
           </tr>
           {%endfor%}
           {% for i in empty_rows %}
@@ -72,7 +71,7 @@
             <td></td>
             <td></td>
             <td></td>
-            <td></td>
+            <td class="last-column">- €</td>
           </tr>
           {% endfor %}
           <tr class="no-border"></tr>
@@ -117,10 +116,10 @@
   </div>
   </main>
   <footer>
-  <p>#TODO</p>
-  <p>#TODO</p>
-  <p>#TODO</p>
-  <p>#TODO</p>
+  <p>RM BARCELONA</p>
+  <p>Folio 113</p>
+  <p>Hoja 469357</p>
+  <p>Inscripción 1</p>
   </footer>
 
 {% endblock %}
