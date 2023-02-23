@@ -33,7 +33,7 @@ def create_build_invoice(request, id):
         invoice = Invoice.objects.get(id=id)
         pass
     except:
-        messages.error(request, 'Something went wrong')
+        # TODO handle exception
         return redirect('invoices')
 
     products = Product.objects.filter(invoice=invoice)
@@ -57,14 +57,22 @@ def create_build_invoice(request, id):
             invoice_form.save()
 
         if product_formset.is_valid():
+            # for obj in product_formset.deleted_objects:
+            #     print("hello")
+            #     obj.delete()
+            print(product_formset)
             for product_form in product_formset:
-                if product_form.cleaned_data == {}:
+                if not product_form.cleaned_data.get('name'):
                     continue
+                print(product_form.cleaned_data)
                 product = product_form.save(commit=False)
                 product.invoice = invoice
                 product.save()
+            product_formset.save()
 
-            return HttpResponseRedirect('/')
+            print(product_formset.errors)
+            print(product_formset.non_form_errors())
+        return HttpResponseRedirect('/')
 
     return render(request, 'invoices/form.html', context)
 
@@ -77,7 +85,7 @@ def invoice_pdf(request, id):
         products = Product.objects.filter(invoice=id)
         pass
     except:
-        messages.error(request, 'Something went wrong')
+        # TODO handle exception
         return HttpResponseRedirect('/')
 
     empty_rows = 15 - len(products)

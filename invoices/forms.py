@@ -1,4 +1,4 @@
-from django.forms import ModelForm, inlineformset_factory
+from django.forms import ModelForm, inlineformset_factory, BaseInlineFormSet
 from django import forms
 from invoices.models import Invoice, Product, Client
 
@@ -12,10 +12,15 @@ class InvoiceForm(ModelForm):
 
 
 class ProductForm(ModelForm):
+
     class Meta:
         model = Product
         fields = ['name', 'quantity', 'price']
 
 
+class BaseInlineProductFormSet(BaseInlineFormSet):
+    deletion_widget = forms.HiddenInput
+
+
 ProductFormSet = inlineformset_factory(
-    Invoice, Product, fields=('name', 'quantity', 'price'), extra=15)
+    Invoice, Product, formset=BaseInlineProductFormSet, fields=('name', 'quantity', 'price'),  extra=1, can_delete=True)

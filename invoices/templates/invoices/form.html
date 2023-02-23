@@ -1,47 +1,45 @@
 {% extends 'invoices/base.html' %}
+{% load static %}
 {% load tailwind_filters %}
 {% block main %}
 <form method="post" class="w-full max-w-2xl m-auto">
   {% csrf_token %}
 
   <h3 class="mb-4 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">Invoice  </h3>
-  {{ invoice_form | crispy }}
+  <div class="w-full max-w-2xl m-auto">
+    {{ invoice_form | crispy }}
+  </div>
 
-  <!-- <h3 class="mb-4 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">Products</h3>
-  {{ form_products|crispy }}-->
+  <div class="w-full max-w-2xl m-auto product-form">
 
-<div class="w-full max-w-2xl m-auto">
-    {{client_form|crispy}}
-</div>
+    <h3>Products</h3>
+      {{ product_formset.management_form }}
 
-<div class="w-full max-w-2xl m-auto">
+        {% for product in product_formset %}
 
-  <h3>Products</h3>
-    {{ product_formset.management_form }}
-
-
-
-      {% for product in product_formset %}
-        {{ product.id }}
-      <div class="flex w-full md:w-2/2 mb-6 md:mb-0 gap-4">
-        <div class="md:w-1/2">
-        {{ product.name|as_crispy_field }}
-        </div>
-        <div class="md:w-1/2">
+          
+          
+          <div class="flex w-full md:w-2/2 mb-6 md:mb-0 gap-4 form-row">
+            {{ product.id }}
+            {{ product.DELETE}}
+            {{ product.name|as_crispy_field }}
             {{ product.quantity|as_crispy_field }}
+            {{ product.price|as_crispy_field }}
+       
+            <div class="flex items-end">
+              
+              {% if product.name.value is not None %}
+                <button class="text-white font-bold py-2 px-4 rounded bg-red-500 hover:bg-red-700 remove-form-row">-</button>
+              {%else%}
+                <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded add-form-row">+</button>
+              {%endif%}
             </div>
-        <div class="md:w-1/2">
-          {{ product.price|as_crispy_field }}
-        </div>
-
-      </div>
-
+          </div>
         {% endfor %}
-
-
-
-  <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"  value="Submit">Submit</button>
-
-</div>
+    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"  value="Submit">Submit</button>
+  </div>
 </form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script src="{% static 'invoices/js/dynamic_form.js' %}"></script>
+
 {% endblock %}
