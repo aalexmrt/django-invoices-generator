@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_browser_reload.middleware.BrowserReloadMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -143,3 +144,5 @@ CRISPY_TEMPLATE_PACK = "tailwind"
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+X_FRAME_OPTIONS = 'SAMEORIGIN'

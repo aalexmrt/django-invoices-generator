@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.core.files.base import ContentFile
-from django.http import HttpResponseRedirect
-
+from django.http import HttpResponseRedirect, HttpResponse
+from django.db.models import Sum
 from invoices.models import Invoice, Product, DocumentPdf
 from invoices.forms import InvoiceForm, ProductFormSet
+from django.views.generic import DetailView
 
 from django_weasyprint.views import WeasyTemplateResponse
 
@@ -31,20 +32,22 @@ def save_invoice_pdf(request, inv_id):
 
     invoice = Invoice.objects.get(id=inv_id)
     products = Product.objects.filter(invoice=invoice)
-    empty_rows = 15 - len(products)
+
     context = {}
     context['invoice'] = invoice
     context['products'] = products
-    context['empty_rows'] = range(empty_rows)
+    context['empty_rows'] = range(15 - len(products))
+
     pdf_render = WeasyTemplateResponse(
         request=request, template='invoices/invoice_pdf.html', context=context).rendered_content
-    document_name = "{}_{}_{}.pdf".format(
+    pdf_file_name = "{}_{}_{}.pdf".format(
         invoice.number, invoice.client.name.replace(" ", "-"), invoice.date)
     created_file = DocumentPdf.objects.get_or_create(
-        file_name=document_name)[0]
+        file_name=pdf_file_name)[0]
     created_file.invoice = invoice
+    # Overwrite existing pdf with the new one
     created_file.file_pdf.delete()
-    created_file.file_pdf.save(document_name, ContentFile(pdf_render))
+    created_file.file_pdf.save(pdf_file_name, ContentFile(pdf_render))
 
     return True
 
@@ -76,16 +79,25 @@ def create_build_invoice(request, id):
         invoice_form = InvoiceForm(request.POST, instance=invoice)
 
         if invoice_form.is_valid():
-            invoice_form.save()
+            invoice = invoice_form.save()
 
         if product_formset.is_valid():
             for product_form in product_formset:
                 if not product_form.cleaned_data.get('name'):
                     continue
                 product = product_form.save(commit=False)
+                product.total = product.price * product.quantity
                 product.invoice = invoice
                 product.save()
             product_formset.save()
+
+        # Perform all the operations to calculate taxes, discount and total of the invoice
+        invoice.total_products = products.aggregate(Sum('total'))['total__sum']
+        invoice.total_discount = invoice.invoice_settings.discount * invoice.total_products
+        invoice.total_base = invoice.total_products + invoice.total_discount
+        invoice.total_tax = invoice.total_base * invoice.invoice_settings.tax / 100
+        invoice.total = invoice.total_tax + invoice.total_base
+        invoice.save()
 
         save_invoice_pdf(request, id)
 
@@ -96,26 +108,13 @@ def create_build_invoice(request, id):
 # TODO merge with the create_build_invoice view
 
 
-def invoice_pdf(request, invoice, products):
-
-    empty_rows = 15 - len(products)
+def invoice_detail(request, id):
+    invoice = Invoice.objects.get(id=id)
 
     context = {}
-    context['invoice'] = invoice
-    context['products'] = products
-    context['empty_rows'] = range(empty_rows)
+    context['document_pdf'] = DocumentPdf.objects.filter(invoice=invoice)[0]
 
-    pdf_render = WeasyTemplateResponse(
-        request=request, template='invoices/invoice_pdf.html', context=context).rendered_content
-    document_name = "{}_{}_{}.pdf".format(
-        invoice.number, invoice.date, invoice.client)
-    created_file = DocumentPdf.objects.get_or_create(
-        file_name=document_name)[0]
-    created_file.invoice = invoice
-    created_file.file_pdf.delete()
-    created_file.file_pdf.save(document_name, ContentFile(pdf_render))
-
-    return render(request, 'invoices/invoice_pdf.html', context)
+    return render(request, 'invoices/detail.html', context)
 
 
 def send_email(request, id):

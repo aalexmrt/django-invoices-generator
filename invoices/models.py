@@ -27,6 +27,19 @@ class Client(CommonCompanyInfo):
     pass
 
 
+class InvoiceSetting(models.Model):
+    company = models.ForeignKey(
+        Company, null=True, blank=True, on_delete=models.CASCADE)
+    discount = models.DecimalField(
+        max_digits=19, decimal_places=2, null=True, blank=True)
+    tax = models.DecimalField(
+        max_digits=19, decimal_places=2, null=True, blank=True)
+    # TODO currency =
+
+    def __str__(self):
+        return "Invoice settings"
+
+
 class Invoice(models.Model):
     number = models.CharField(null=True, blank=True, max_length=100)
     date = models.DateField(null=True, blank=True)
@@ -37,8 +50,18 @@ class Invoice(models.Model):
         Company, null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    total_products = models.DecimalField(
+        max_digits=19, decimal_places=2, null=True, blank=True)
+    total_discount = models.DecimalField(
+        max_digits=19, decimal_places=2, null=True, blank=True)
+    total_base = models.DecimalField(
+        max_digits=19, decimal_places=2, null=True, blank=True)
+    total_tax = models.DecimalField(
+        max_digits=19, decimal_places=2, null=True, blank=True)
     total = models.DecimalField(
         max_digits=19, decimal_places=2, null=True, blank=True)
+    invoice_settings = models.ForeignKey(
+        InvoiceSetting, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.number
@@ -65,20 +88,8 @@ class Invoice(models.Model):
         if self.number is None:
             self.number = self.get_invoice_number()
         self.company = Company.objects.get(id=1)
+        self.invoice_settings = InvoiceSetting.objects.get(id=1)
         super(Invoice, self).save(*args, **kwargs)
-
-
-class InvoiceSetting(models.Model):
-    company = models.ForeignKey(
-        Company, null=True, blank=True, on_delete=models.CASCADE)
-    # TODO currency =
-    discount = models.DecimalField(
-        max_digits=19, decimal_places=2, null=True, blank=True)
-    tax_base = models.DecimalField(
-        max_digits=19, decimal_places=2, null=True, blank=True)
-
-    def __str__():
-        return "Invoice settings"
 
 
 class Product(models.Model):
@@ -95,12 +106,6 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        if self.quantity is not None and self.price is not None:
-            self.total = self.quantity * self.price
-
-        super(Product, self).save(*args, **kwargs)
-
 
 class DocumentPdf(models.Model):
 
@@ -108,3 +113,6 @@ class DocumentPdf(models.Model):
     invoice = models.ForeignKey(
         Invoice, blank=True, null=True, on_delete=models.CASCADE)
     file_pdf = models.FileField(upload_to='invoices_pdf/')
+
+    def __str__(self):
+        return "hello"

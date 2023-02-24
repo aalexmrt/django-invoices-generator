@@ -79,31 +79,31 @@
             <td class="no-border"></td>
             <td class="no-border"></td>
             <td class="left-bold-border top-bold-border" colspan="2">Total</td>
-            <td class="top-bold-border">{{invoice.number}}</td>
+            <td class="top-bold-border">{{invoice.total_products}} €</td>
           </tr>
           <tr>
             <td class="no-border"></td>
             <td class="no-border"></td>
-            <td class="left-bold-border" colspan="2">Descuento 0%</td>
-            <td class="">{{invoice.number}}</td>
+            <td class="left-bold-border" colspan="2">Descuento {{invoice.invoice_settings.discount}}%</td>
+            <td class="">{{invoice.total_discount}} €</td>
           </tr>
           <tr>
             <td class="no-border"></td>
             <td class="no-border"></td>
             <td class="left-bold-border" colspan="2">Base imponible</td>
-            <td class="">0 {{invoice.number}}</td>
+            <td class="">{{invoice.total_base}} €</td>
           </tr>
           <tr>
             <td class="no-border"></td>
             <td class="no-border"></td>
-            <td class="left-bold-border" colspan="2">I.V.A 10%</td>
-            <td class="">{{invoice.number}}</td>
+            <td class="left-bold-border" colspan="2">I.V.A {{invoice.invoice_settings.tax}}%</td>
+            <td class="">{{invoice.total_tax}} €</td>
           </tr>
           <tr>
             <td class="no-border"></td>
             <td class="no-border"></td>
             <td class="left-bold-border" colspan="2">Total</td>
-            <td class="">{{invoice.number}}</td>
+            <td class="">{{invoice.total}} €</td>
           </tr>
         </tbody>
     </table>
