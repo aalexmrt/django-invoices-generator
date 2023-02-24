@@ -27,6 +27,28 @@ def create_invoice(request):
     return redirect('create_build_invoice', inv.id)
 
 
+def save_invoice_pdf(request, inv_id):
+
+    invoice = Invoice.objects.get(id=inv_id)
+    products = Product.objects.filter(invoice=invoice)
+    empty_rows = 15 - len(products)
+    context = {}
+    context['invoice'] = invoice
+    context['products'] = products
+    context['empty_rows'] = range(empty_rows)
+    pdf_render = WeasyTemplateResponse(
+        request=request, template='invoices/invoice_pdf.html', context=context).rendered_content
+    document_name = "{}_{}_{}.pdf".format(
+        invoice.number, invoice.client.name.replace(" ", "-"), invoice.date)
+    created_file = DocumentPdf.objects.get_or_create(
+        file_name=document_name)[0]
+    created_file.invoice = invoice
+    created_file.file_pdf.delete()
+    created_file.file_pdf.save(document_name, ContentFile(pdf_render))
+
+    return True
+
+
 def create_build_invoice(request, id):
    # fetch that invoice
     try:
@@ -57,21 +79,16 @@ def create_build_invoice(request, id):
             invoice_form.save()
 
         if product_formset.is_valid():
-            # for obj in product_formset.deleted_objects:
-            #     print("hello")
-            #     obj.delete()
-            print(product_formset)
             for product_form in product_formset:
                 if not product_form.cleaned_data.get('name'):
                     continue
-                print(product_form.cleaned_data)
                 product = product_form.save(commit=False)
                 product.invoice = invoice
                 product.save()
             product_formset.save()
 
-            print(product_formset.errors)
-            print(product_formset.non_form_errors())
+        save_invoice_pdf(request, id)
+
         return HttpResponseRedirect('/')
 
     return render(request, 'invoices/form.html', context)
@@ -79,14 +96,7 @@ def create_build_invoice(request, id):
 # TODO merge with the create_build_invoice view
 
 
-def invoice_pdf(request, id):
-    try:
-        invoice = Invoice.objects.get(id=id)
-        products = Product.objects.filter(invoice=id)
-        pass
-    except:
-        # TODO handle exception
-        return HttpResponseRedirect('/')
+def invoice_pdf(request, invoice, products):
 
     empty_rows = 15 - len(products)
 
@@ -106,3 +116,8 @@ def invoice_pdf(request, id):
     created_file.file_pdf.save(document_name, ContentFile(pdf_render))
 
     return render(request, 'invoices/invoice_pdf.html', context)
+
+
+def send_email(request, id):
+    # TODO
+    return "hello"
