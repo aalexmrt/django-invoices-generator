@@ -19,7 +19,7 @@
   TODO PUT IMAGE OF Company -->
   </div>
   <div class="company-data header-item">
-    <p>{{invoice.company.name}}</p>
+    <p>{{invoice.company.name|upper}}</p>
     <p>{{invoice.company.address}}</p>
     <p>{{invoice.company.zip_code}} {{invoice.company.city}} - {{invoice.company.state}}</p>
     <p>CIF &emsp; {{invoice.company.company_id_number}}</p>

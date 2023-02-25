@@ -5,6 +5,7 @@ from django.db.models import Sum
 from invoices.models import Invoice, Product, DocumentPdf
 from invoices.forms import InvoiceForm, ProductFormSet
 from django.views.generic import DetailView
+from invoices.utils.send_email import *
 
 from django_weasyprint.views import WeasyTemplateResponse
 
@@ -42,8 +43,9 @@ def save_invoice_pdf(request, inv_id):
         request=request, template='invoices/invoice_pdf.html', context=context).rendered_content
     pdf_file_name = "{}_{}_{}.pdf".format(
         invoice.number, invoice.client.name.replace(" ", "-"), invoice.date)
-    created_file = DocumentPdf.objects.get_or_create(
-        file_name=pdf_file_name)[0]
+
+    created_file = DocumentPdf.objects.get_or_create(invoice=invoice)[0]
+
     created_file.invoice = invoice
     # Overwrite existing pdf with the new one
     created_file.file_pdf.delete()
@@ -109,8 +111,9 @@ def create_build_invoice(request, id):
 
 
 def invoice_detail(request, id):
+    print(id)
     invoice = Invoice.objects.get(id=id)
-
+    print(invoice)
     context = {}
     context['document_pdf'] = DocumentPdf.objects.filter(invoice=invoice)[0]
 
@@ -118,5 +121,13 @@ def invoice_detail(request, id):
 
 
 def send_email(request, id):
-    # TODO
-    return "hello"
+
+    invoice = Invoice.objects.get(id=id)
+    files = DocumentPdf.objects.filter(invoice=invoice)
+
+    send_invoice_mail(invoice.client, invoice.company,
+                      files)
+
+    print("succeded")
+
+    return HttpResponseRedirect('/')

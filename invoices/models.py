@@ -11,6 +11,7 @@ class CommonCompanyInfo(models.Model):
     company_id_number = models.CharField(null=True, blank=True, max_length=100)
     bank_account_number = models.CharField(
         null=True, blank=True, max_length=100)
+    email = models.EmailField(null=True, blank=True, max_length=254)
 
     def __str__(self):
         return self.name
@@ -109,10 +110,9 @@ class Product(models.Model):
 
 class DocumentPdf(models.Model):
 
-    file_name = models.CharField(max_length=200)
-    invoice = models.ForeignKey(
-        Invoice, blank=True, null=True, on_delete=models.CASCADE)
+    invoice = models.OneToOneField(
+        Invoice, on_delete=models.CASCADE)
     file_pdf = models.FileField(upload_to='invoices_pdf/')
 
     def __str__(self):
-        return "hello"
+        return self.file_pdf.name.split("/")[1]
