@@ -1,13 +1,15 @@
 from django.shortcuts import render, redirect
 from django.core.files.base import ContentFile
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.db.models import Sum
-from invoices.models import Invoice, Product, DocumentPdf
+from invoices.models import Invoice, Product, DocumentPdf, Client, Company
 from invoices.forms import InvoiceForm, ProductFormSet
-from django.views.generic import DetailView
 from invoices.utils.send_email import *
-
 from django_weasyprint.views import WeasyTemplateResponse
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
 
 
 def index(request):
@@ -111,9 +113,7 @@ def create_build_invoice(request, id):
 
 
 def invoice_detail(request, id):
-    print(id)
     invoice = Invoice.objects.get(id=id)
-    print(invoice)
     context = {}
     context['document_pdf'] = DocumentPdf.objects.filter(invoice=invoice)[0]
 
@@ -121,12 +121,17 @@ def invoice_detail(request, id):
 
 
 def send_email(request, id):
+    GMAIL = env("GMAIL_ACCOUNT")
+    GMAIL_PASSWORD = env("GMAIL_ACCOUNT_PWD")
 
     invoice = Invoice.objects.get(id=id)
-    files = DocumentPdf.objects.filter(invoice=invoice)
-
-    send_invoice_mail(invoice.client, invoice.company,
-                      files)
+    invoice_file = DocumentPdf.objects.filter(invoice=invoice)
+    # TODO add the part of the email cc
+    todo_cc = ["", ""]
+    print(invoice.client.primary_contact.email_account)
+    if send_invoice_email(GMAIL, GMAIL_PASSWORD, invoice.company.name, invoice.client.primary_contact.email_account, invoice.client.primary_contact.name, todo_cc, invoice_file):
+        invoice.mailed = True
+        invoice.save()
 
     print("succeded")
 

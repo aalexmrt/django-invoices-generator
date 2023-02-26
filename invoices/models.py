@@ -2,16 +2,24 @@ from django.db import models
 import datetime
 
 
+class Contact(models.Model):
+    name = models.CharField(null=True, blank=True, max_length=100)
+    email_account = models.EmailField(max_length=254)
+
+    def __str__(self):
+        return self.name
+
+
 class CommonCompanyInfo(models.Model):
     name = models.CharField(null=True, blank=True, max_length=100)
     address = models.CharField(null=True, blank=True, max_length=100)
     zip_code = models.CharField(null=True, blank=True, max_length=100)
     city = models.CharField(null=True, blank=True, max_length=100)
     state = models.CharField(null=True, blank=True, max_length=100)
-    company_id_number = models.CharField(null=True, blank=True, max_length=100)
+    identification_number = models.CharField(
+        null=True, blank=True, max_length=100)
     bank_account_number = models.CharField(
         null=True, blank=True, max_length=100)
-    email = models.EmailField(null=True, blank=True, max_length=254)
 
     def __str__(self):
         return self.name
@@ -21,10 +29,20 @@ class CommonCompanyInfo(models.Model):
 
 
 class Company(CommonCompanyInfo):
+    # primary_contact = models.ForeignKey(
+    #     Contact, on_delete=models.CASCADE, related_name='primary_contact')
+    # additional_contacts = models.ForeignKey(
+    #     Contact, related_name='additional_contacts', on_delete=models.CASCADE)
+
     pass
 
 
 class Client(CommonCompanyInfo):
+    primary_contact = models.OneToOneField(
+        Contact, null=True, blank=True, on_delete=models.CASCADE, related_name='primary_contact')
+    additional_contact = models.ForeignKey(
+        Contact, null=True, blank=True, related_name='additional_contact', on_delete=models.CASCADE)
+
     pass
 
 
@@ -109,7 +127,6 @@ class Product(models.Model):
 
 
 class DocumentPdf(models.Model):
-
     invoice = models.OneToOneField(
         Invoice, on_delete=models.CASCADE)
     file_pdf = models.FileField(upload_to='invoices_pdf/')

@@ -20,9 +20,9 @@
   </div>
   <div class="company-data header-item">
     <p>{{invoice.company.name|upper}}</p>
-    <p>{{invoice.company.address}}</p>
-    <p>{{invoice.company.zip_code}} {{invoice.company.city}} - {{invoice.company.state}}</p>
-    <p>CIF &emsp; {{invoice.company.company_id_number}}</p>
+    <p>{{invoice.company.address|upper}}</p>
+    <p>{{invoice.company.zip_code}} {{invoice.company.city|upper}} - {{invoice.company.state|upper}}</p>
+    <p>CIF &emsp; {{invoice.company.identification_number}}</p>
   </div>
 
 </header>
@@ -31,15 +31,15 @@
     <div class="invoice-info-detail item small-margins left-margin">
       <h3>Cliente:</h3>
 
-      <p>{{invoice.client.name}}</p>
+      <p>{{invoice.client.name|upper}}</p>
     </div>
     <div class="invoice-info-detail item small-margins left-margin">
       <h3>Domicilio:</h3>
-      <p>{{invoice.client.address}}, {{invoice.client.zip_code}}, {{invoice.client.city}}</p>
+      <p>{{invoice.client.address|upper}}, {{invoice.client.zip_code}}, {{invoice.client.city|upper}}</p>
     </div>
     <div class="invoice-info-detail item small-margins left-margin">
       <h3>C.I.F:</h3>
-      <p>{{invoice.client.company_id_number}}</p>
+      <p>{{invoice.client.identification_number}}</p>
     </div>
   </div>
 
