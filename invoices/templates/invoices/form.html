@@ -14,20 +14,14 @@
 
     <h3>Products</h3>
       {{ product_formset.management_form }}
-
         {% for product in product_formset %}
-
-          
-          
           <div class="flex w-full md:w-2/2 mb-6 md:mb-0 gap-4 form-row">
             {{ product.id }}
             {{ product.DELETE}}
             {{ product.name|as_crispy_field }}
             {{ product.quantity|as_crispy_field }}
             {{ product.price|as_crispy_field }}
-       
             <div class="flex items-end">
-              
               {% if product.name.value is not None %}
                 <button class="text-white font-bold py-2 px-4 rounded bg-red-500 hover:bg-red-700 remove-form-row">-</button>
               {%else%}

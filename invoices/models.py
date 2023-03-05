@@ -130,6 +130,8 @@ class DocumentPdf(models.Model):
     invoice = models.OneToOneField(
         Invoice, on_delete=models.CASCADE)
     file_pdf = models.FileField(upload_to='invoices_pdf/')
+    client = models.ForeignKey(
+        Client, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.file_pdf.name.split("/")[1]

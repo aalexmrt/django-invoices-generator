@@ -49,6 +49,7 @@ def save_invoice_pdf(request, inv_id):
     created_file = DocumentPdf.objects.get_or_create(invoice=invoice)[0]
 
     created_file.invoice = invoice
+    created_file.client = invoice.client
     # Overwrite existing pdf with the new one
     created_file.file_pdf.delete()
     created_file.file_pdf.save(pdf_file_name, ContentFile(pdf_render))
@@ -134,5 +135,34 @@ def send_email(request, id):
         invoice.save()
 
     print("succeded")
+
+    return HttpResponseRedirect('/')
+
+
+def send_all_invoices(request):
+    GMAIL = env("GMAIL_ACCOUNT")
+    GMAIL_PASSWORD = env("GMAIL_ACCOUNT_PWD")
+    # a little hardcoded
+    company = Company.objects.get(pk=1)
+
+    # This function gets all the invoices that hasn't been mailed and send them at once
+    invoices_query = Invoice.objects.filter(mailed=False).order_by('-client')
+
+    clients_list = []
+    invoices_list = []
+    # a little hardcoded again
+    todo_cc = ["", ""]
+    for invoice in invoices_query:
+        if invoice.client not in clients_list:
+            clients_list.append(invoice.client)
+
+    for client in clients_list:
+        pdf_query = DocumentPdf.objects.filter(
+            client=client).filter(invoice__mailed=False)
+
+        if send_invoice_email(GMAIL, GMAIL_PASSWORD, company.name,
+                              client.primary_contact.email_account, client.primary_contact.name, todo_cc, pdf_query):
+            for pdf in pdf_query:
+                Invoice.objects.filter(id=pdf.invoice.id).update(mailed=True)
 
     return HttpResponseRedirect('/')

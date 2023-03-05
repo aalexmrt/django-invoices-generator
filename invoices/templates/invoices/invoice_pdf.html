@@ -62,7 +62,7 @@
             <td></td>
             <td>{{product.quantity}}</td>
             <td>{{product.price}} €</td>
-            <td class="last-column">{{product.total}} €</td>
+            <td class="last-column-bold">{{product.total}} €</td>
           </tr>
           {%endfor%}
           {% for i in empty_rows %}
@@ -71,7 +71,7 @@
             <td></td>
             <td></td>
             <td></td>
-            <td class="last-column">- €</td>
+            <td class="last-column-bold">- €</td>
           </tr>
           {% endfor %}
           <tr class="no-border"></tr>
@@ -79,31 +79,31 @@
             <td class="no-border"></td>
             <td class="no-border"></td>
             <td class="left-bold-border top-bold-border" colspan="2">Total</td>
-            <td class="top-bold-border">{{invoice.total_products}} €</td>
+            <td class="last-column top-bold-border">{{invoice.total_products}} €</td>
           </tr>
           <tr>
             <td class="no-border"></td>
             <td class="no-border"></td>
             <td class="left-bold-border" colspan="2">Descuento {{invoice.invoice_settings.discount}}%</td>
-            <td class="">{{invoice.total_discount}} €</td>
+            <td class="last-column">{{invoice.total_discount}} €</td>
           </tr>
           <tr>
             <td class="no-border"></td>
             <td class="no-border"></td>
             <td class="left-bold-border" colspan="2">Base imponible</td>
-            <td class="">{{invoice.total_base}} €</td>
+            <td class="last-column">{{invoice.total_base}} €</td>
           </tr>
           <tr>
             <td class="no-border"></td>
             <td class="no-border"></td>
             <td class="left-bold-border" colspan="2">I.V.A {{invoice.invoice_settings.tax}}%</td>
-            <td class="">{{invoice.total_tax}} €</td>
+            <td class="last-column">{{invoice.total_tax}} €</td>
           </tr>
           <tr>
             <td class="no-border"></td>
             <td class="no-border"></td>
-            <td class="left-bold-border" colspan="2">Total</td>
-            <td class="">{{invoice.total}} €</td>
+            <td class="left-bold-border" colspan="2">Total factura</td>
+            <td class="last-column-bold">{{invoice.total}} €</td>
           </tr>
         </tbody>
     </table>

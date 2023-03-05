@@ -137,9 +137,12 @@ th,td {
 
 .last-column{
     text-align: right;
-    font-weight: bold;
 }
 
+.last-column-bold{
+    text-align: right;
+    font-weight: bold;
+}
 tr {
     height: 23.5px;
 }
