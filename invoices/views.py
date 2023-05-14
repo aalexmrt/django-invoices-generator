@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.core.files.base import ContentFile
-from invoices.models import Invoice, Issuer, MailInfo, OrderLine, Product
-from django.http import HttpResponse, HttpResponseRedirect
+from invoices.models import Invoice, Issuer, GlobalSettings, MailInfo, OrderLine, Product
+from django.http import HttpResponseRedirect
 from invoices.forms import InvoiceForm, OrderLineFormSet
 from invoices.utils.send_email import *
 from django_weasyprint.views import WeasyTemplateResponse
@@ -23,6 +23,8 @@ def index(request):
 def add_invoice(request):
 
     new_invoice = Invoice.objects.create()
+    new_invoice.save()
+    print(new_invoice.id)
     return redirect('make_invoice', new_invoice.id)
 
 

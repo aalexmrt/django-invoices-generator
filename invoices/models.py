@@ -55,15 +55,6 @@ class Customer(models.Model):
         return self.company.name
 
 
-class Product(models.Model):
-    name = models.CharField(null=True, blank=True, max_length=100)
-    price = models.DecimalField(
-        max_digits=6, decimal_places=2, null=True, blank=True)
-
-    def __str__(self):
-        return self.name
-
-
 class MailInfo(models.Model):
     STATUS_CHOICES = (
         ("Pending", "Pending"),
@@ -78,12 +69,35 @@ class MailInfo(models.Model):
         return self.status
 
 
+class GlobalSettings(models.Model):
+    issuer = models.ForeignKey(
+        Issuer, null=True, blank=True, on_delete=models.CASCADE)
+    discount_value = models.DecimalField(
+        max_digits=6, decimal_places=2, null=True, blank=True, default=0)
+    tax_value = models.DecimalField(
+        max_digits=6, decimal_places=2, null=True, blank=True, default=0)
+
+    def __str__(self):
+        return "Global settings"
+
+    def default_issuer(self):
+        return self.issuer
+
+    def default_discount_value(self):
+        return self.discount_value
+
+    def default_tax_value(self):
+        return self.tax_value
+
+
 class Invoice(models.Model):
 
     issuer = models.ForeignKey(
         Issuer, null=True, blank=True, on_delete=models.CASCADE)
     customer = models.ForeignKey(
         Customer, null=True, blank=True, on_delete=models.CASCADE)
+    global_settings = models.ForeignKey(
+        GlobalSettings, null=True, blank=True, on_delete=models.CASCADE)
     mail_info = models.OneToOneField(
         MailInfo, null=True, blank=True, on_delete=models.CASCADE)
     pdf_document = models.FileField(upload_to='invoices_pdf/')
@@ -92,6 +106,8 @@ class Invoice(models.Model):
     discount_value = models.DecimalField(
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
     discount_amount = models.DecimalField(
+        max_digits=6, decimal_places=2, null=True, blank=True, default=0)
+    tax_base = models.DecimalField(
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
     tax_value = models.DecimalField(
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
@@ -105,6 +121,22 @@ class Invoice(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.global_settings = GlobalSettings.objects.get(pk=1)
+        print(self.global_settings)
+
+    def save(self, *args, **kwargs):
+
+        if not self.issuer:
+            self.issuer = self.global_settings.default_issuer()
+
+        if not self.discount_value and not self.tax_value:
+            self.discount_value = self.global_settings.default_discount_value()
+            self.tax_value = self.global_settings.default_tax_value()
+
+        super().save(*args, **kwargs)
+
     def get_sequence_number(self):
         if self.sequence and self.number:
             return f"{self.sequence}-{self.number}"
@@ -112,19 +144,29 @@ class Invoice(models.Model):
             return f"Database id: {self.id}"
 
     def do_operations(self, orders):
-        self.discount_amount = self.sub_total = self.tax_amount = self.total_due = 0
-
+        self.sub_total = self.discount_amount = self.tax_base = self.tax_amount = self.total_due = 0
         for current_order in orders:
-            # self.discount_amount += current_order.discount_amount
             self.sub_total += current_order.line_total
-            # self.tax_amount += current_order.tax_amount
-            # self.total_due += current_order.line_total
 
-        print("hello")
-        print(orders)
+        self.discount_amount = self.sub_total * self.discount_value / 100
+        self.tax_base = self.sub_total - self.discount_amount
+        self.tax_amount = self.tax_base * self.tax_value / 100
+        self.total_due = self.tax_base + self.tax_amount
 
     def __str__(self):
         return self.get_sequence_number()
+
+
+class Product(models.Model):
+    name = models.CharField(null=True, blank=True, max_length=100)
+    price = models.DecimalField(
+        max_digits=6, decimal_places=2, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def default_unit_price(self):
+        return self.price
 
 
 class OrderLine(models.Model):
@@ -139,14 +181,14 @@ class OrderLine(models.Model):
         max_digits=6, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
-        return "test"
+        return f"Related invoice: {self.invoice.get_sequence_number()}"
 
     def save(self, *args, **kwargs):
+        # set default unit price if not already set
+        if not self.unit_price:
+            self.unit_price = self.product.default_unit_price()
+
         # get line total
         self.line_total = self.quantity * self.unit_price
 
         super(OrderLine, self).save(*args, **kwargs)
-
-    def __str__(self):
-        object = str(self.id)
-        return object

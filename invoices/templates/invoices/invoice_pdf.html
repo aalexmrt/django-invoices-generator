@@ -84,19 +84,19 @@
           <tr>
             <td class="no-border"></td>
             <td class="no-border"></td>
-            <td class="left-bold-border" colspan="2">Descuento {{invoice.invoice_settings.discount}}%</td>
+            <td class="left-bold-border" colspan="2">Descuento {{invoice.discount_value}}%</td>
             <td class="last-column">{{invoice.discount_amount}} €</td>
           </tr>
           <tr>
             <td class="no-border"></td>
             <td class="no-border"></td>
             <td class="left-bold-border" colspan="2">Base imponible</td>
-            <td class="last-column">TODO €</td>
+            <td class="last-column">{{invoice.tax_base}} €</td>
           </tr>
           <tr>
             <td class="no-border"></td>
             <td class="no-border"></td>
-            <td class="left-bold-border" colspan="2">I.V.A {{invoice.invoice_settings.tax}}%</td>
+            <td class="left-bold-border" colspan="2">I.V.A {{invoice.tax_value}}%</td>
             <td class="last-column">{{invoice.tax_amount}} €</td>
           </tr>
           <tr>
