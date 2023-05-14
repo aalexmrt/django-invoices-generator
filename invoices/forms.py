@@ -1,26 +1,29 @@
 from django.forms import ModelForm, inlineformset_factory, BaseInlineFormSet
 from django import forms
-from invoices.models import Invoice, Product, Client
+
+
+from invoices.models import Customer, Invoice, OrderLine, Product
 
 
 class InvoiceForm(ModelForm):
-    client = forms.ModelChoiceField(queryset=Client.objects.all())
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all())
 
     class Meta:
         model = Invoice
-        fields = ['number', 'date', 'client']
+        fields = ['sequence', 'number', 'issued_date', 'customer']
 
 
-class ProductForm(ModelForm):
+class OrderLineForm(ModelForm):
+    product = forms.ModelChoiceField(queryset=Product.objects.all())
 
     class Meta:
-        model = Product
-        fields = ['name', 'quantity', 'price']
+        model = OrderLine
+        fields = ['product', 'quantity', 'unit_price']
 
 
-class BaseInlineProductFormSet(BaseInlineFormSet):
+class BaseInlineOrderFormSet(BaseInlineFormSet):
     deletion_widget = forms.HiddenInput
 
 
-ProductFormSet = inlineformset_factory(
-    Invoice, Product, formset=BaseInlineProductFormSet, fields=('name', 'quantity', 'price'),  extra=1, can_delete=True)
+OrderLineFormSet = inlineformset_factory(
+    Invoice, OrderLine, form=OrderLineForm, formset=BaseInlineOrderFormSet, fields=('product', 'quantity', 'unit_price'), extra=1, can_delete=True)

@@ -2,36 +2,38 @@
 {% load static %}
 {% load tailwind_filters %}
 {% block main %}
-<form method="post" class="w-full max-w-2xl m-auto">
+<form method="post" class="w-full m-auto mr-5 ml-5">
   {% csrf_token %}
-
-  <h3 class="mb-4 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">Invoice  </h3>
-  <div class="w-full max-w-2xl m-auto">
-    {{ invoice_form | crispy }}
+  <h3 class="mb-4 text-3xl font-bold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">
+    Details
+  </h3>
+  <div class="flex w-full m-auto mb-6 gap-4">
+    {{ invoice_form.sequence | as_crispy_field }}
+    {{ invoice_form.number | as_crispy_field }}
+    {{ invoice_form.issued_date | as_crispy_field }}
+    {{ invoice_form.customer | as_crispy_field }}
   </div>
 
-  <div class="w-full max-w-2xl m-auto product-form">
 
-    <h3>Products</h3>
-      {{ product_formset.management_form }}
-        {% for product in product_formset %}
-          <div class="flex w-full md:w-2/2 mb-6 md:mb-0 gap-4 form-row">
-            {{ product.id }}
-            {{ product.DELETE}}
-            {{ product.name|as_crispy_field }}
-            {{ product.quantity|as_crispy_field }}
-            {{ product.price|as_crispy_field }}
-            <div class="flex items-end">
-              {% if product.name.value is not None %}
-                <button class="text-white font-bold py-2 px-4 rounded bg-red-500 hover:bg-red-700 remove-form-row">-</button>
-              {%else%}
-                <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded add-form-row">+</button>
-              {%endif%}
-            </div>
-          </div>
-        {% endfor %}
+  <div class="w-full mb-6 gap-4 justify-center">
+    {{ order_formset.management_form }}
+    <h3 class="mb-4 text-3xl font-bold leading-none tracking-tight text-gray-900 md:text-1xl dark:text-white">
+      Order
+    </h3>
+    {% for order in order_formset %}
+      <div class="flex w-full mb-6 gap-4 justify-center form-row"> 
+        {{order.id}}
+        {% if order.DELETE %}
+          {{ order.DELETE }}
+        {% endif %}
+        {{order.product|as_crispy_field}}
+        {{order.quantity|as_crispy_field}}
+        {{order.unit_price|as_crispy_field}}
+      </div>
+    {% endfor %}
     <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"  value="Submit">Submit</button>
   </div>
+
 </form>
 <script src="{% static 'invoices/js/dynamic_form.js' %}"></script>
 

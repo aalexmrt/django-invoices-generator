@@ -7,10 +7,10 @@
     <h2 class="title left-margin">FACTURA</h2>
     <div class="invoice-info-detail small-margins left-margin">
       <h3>Número:</h3>
-      <p>{{invoice.number}}</p>
+      <p>{{invoice.sequence}}-{{invoice.number|stringformat:"s"}}</p>
       <div class="break"></div> <!-- break -->
       <h3>Fecha:</h3>
-      <p>{{invoice.date|date:"d/m/Y"}}</p>
+      <p>{{invoice.issued_date|date:"d/m/Y"}}</p>
     </div>
   </div>
 
@@ -19,27 +19,27 @@
   TODO PUT IMAGE OF Company -->
   </div>
   <div class="company-data header-item">
-    <p>{{invoice.company.name|upper}}</p>
-    <p>{{invoice.company.address|upper}}</p>
-    <p>{{invoice.company.zip_code}} {{invoice.company.city|upper}} - {{invoice.company.state|upper}}</p>
-    <p>CIF &emsp; {{invoice.company.identification_number}}</p>
+    <p>{{invoice.issuer.company.name|upper}}</p>
+    <p>{{invoice.issuer.company.address|upper}}</p>
+    <p>{{invoice.issuer.company.address.street}} {{invoice.issuer.company.address.city|upper}} - {{invoice.issuer.company.address.state|upper}}</p>
+    <p>CIF &emsp; {{invoice.issuer.company.customer_information_file_number}}</p>
   </div>
-
+ 
 </header>
 <main>
-  <div class="content-box client-data">
+  <div class="content-box customer-data">
     <div class="invoice-info-detail item small-margins left-margin">
-      <h3>Cliente:</h3>
+      <h3>customere:</h3>
 
-      <p>{{invoice.client.name|upper}}</p>
+      <p>{{invoice.customer.company.name|upper}}</p>
     </div>
     <div class="invoice-info-detail item small-margins left-margin">
       <h3>Domicilio:</h3>
-      <p>{{invoice.client.address|upper}}, {{invoice.client.zip_code}}, {{invoice.client.city|upper}}</p>
+      <p>{{invoice.customer.company.address|upper}}, {{invoice.customer.company.address.postal_code}}, {{invoice.customer.company.address.city|upper}}</p>
     </div>
     <div class="invoice-info-detail item small-margins left-margin">
       <h3>C.I.F:</h3>
-      <p>{{invoice.client.identification_number}}</p>
+      <p>{{invoice.customer.company.customer_information_file_number}}</p>
     </div>
   </div>
 
@@ -56,13 +56,13 @@
           </tr>
         </thead>
         <tbody>
-          {% for product in products%}
+          {% for order in order_lines%}
           <tr>
-            <td>{{product.name|upper}}</td>
+            <td>{{order.product.name|upper}}</td>
             <td></td>
-            <td>{{product.quantity}}</td>
-            <td>{{product.price}} €</td>
-            <td class="last-column-bold">{{product.total}} €</td>
+            <td>{{order.quantity}}</td>
+            <td>{{order.unit_price}} €</td>
+            <td class="last-column-bold">{{order.line_total}} €</td>
           </tr>
           {%endfor%}
           {% for i in empty_rows %}
@@ -79,31 +79,31 @@
             <td class="no-border"></td>
             <td class="no-border"></td>
             <td class="left-bold-border top-bold-border" colspan="2">Total</td>
-            <td class="last-column top-bold-border">{{invoice.total_products}} €</td>
+            <td class="last-column top-bold-border">{{invoice.sub_total}} €</td>
           </tr>
           <tr>
             <td class="no-border"></td>
             <td class="no-border"></td>
             <td class="left-bold-border" colspan="2">Descuento {{invoice.invoice_settings.discount}}%</td>
-            <td class="last-column">{{invoice.total_discount}} €</td>
+            <td class="last-column">{{invoice.discount_amount}} €</td>
           </tr>
           <tr>
             <td class="no-border"></td>
             <td class="no-border"></td>
             <td class="left-bold-border" colspan="2">Base imponible</td>
-            <td class="last-column">{{invoice.total_base}} €</td>
+            <td class="last-column">TODO €</td>
           </tr>
           <tr>
             <td class="no-border"></td>
             <td class="no-border"></td>
             <td class="left-bold-border" colspan="2">I.V.A {{invoice.invoice_settings.tax}}%</td>
-            <td class="last-column">{{invoice.total_tax}} €</td>
+            <td class="last-column">{{invoice.tax_amount}} €</td>
           </tr>
           <tr>
             <td class="no-border"></td>
             <td class="no-border"></td>
             <td class="left-bold-border" colspan="2">Total factura</td>
-            <td class="last-column-bold">{{invoice.total}} €</td>
+            <td class="last-column-bold">{{invoice.total_due}} €</td>
           </tr>
         </tbody>
     </table>
@@ -111,7 +111,7 @@
   <div class="content-box payment-data">
   <div class="payment-info-detail item small-margins">
   <h3>Forma de pago:</h3>
-  <p>TRANSFERENCIA BANCARIA<br>&emsp;&emsp; IBAN: {{invoice.company.bank_account_number}}</p>
+  <p>TRANSFERENCIA BANCARIA<br>&emsp;&emsp; IBAN: {{invoice.issuer.company.bank_account_number}}</p>
   </div>
   </div>
   </main>

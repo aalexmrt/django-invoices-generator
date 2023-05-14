@@ -38,14 +38,15 @@
                </td>
                <th scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
                    <div>
-                       <div class="text-base font-semibold"><a href="{% url 'create_build_invoice' invoice.id %}">{{invoice.number}}</a></div>
+                       <div class="text-base font-semibold"><a href="{% url 'make_invoice' invoice.id %}">{{invoice.get_sequence_number}}</a></div>
                    </div>
                </th>
                <td class="px-6 py-4">
-                   {{invoice.date}}
+                   {{invoice.issued_date}}
                </td>
                <td class="px-6 py-4">
-                   {% if invoice.mailed == 1 %}
+
+                   {% if invoice.mail_info.status == 'Delivered' %}
                        <div class="flex items-center">
                            <div class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"></div> Sent
                        </div>
@@ -56,7 +57,7 @@
                    {% endif %}
                </td>
                <td class="px-6 py-4">
-                   {{invoice.client}}
+                   {{invoice.customer}}
                </td>
                <td class="w-14 p-4">
                    <div class="flex items-center">
