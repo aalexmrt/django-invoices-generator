@@ -59,7 +59,7 @@ def make_invoice(request, id):
                     pass
 
             order_formset.save()
-            invoice.do_operations(invoice_orders)
+            invoice.calculate_totals(invoice_orders)
             invoice.save()
             save_invoice_pdf(request, id)
 

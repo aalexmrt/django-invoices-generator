@@ -1,3 +1,4 @@
+import logging
 from django.db import models
 
 
@@ -69,6 +70,11 @@ class MailInfo(models.Model):
         return self.status
 
 
+class GlobalSettingsManager(models.Manager):
+    def get_global_settings(self):
+        return self.get(pk=1)
+
+
 class GlobalSettings(models.Model):
     issuer = models.ForeignKey(
         Issuer, null=True, blank=True, on_delete=models.CASCADE)
@@ -77,15 +83,20 @@ class GlobalSettings(models.Model):
     tax_value = models.DecimalField(
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
 
+    objects = GlobalSettingsManager()
+
     def __str__(self):
         return "Global settings"
 
+    @property
     def default_issuer(self):
         return self.issuer
 
+    @property
     def default_discount_value(self):
         return self.discount_value
 
+    @property
     def default_tax_value(self):
         return self.tax_value
 
@@ -123,27 +134,32 @@ class Invoice(models.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.global_settings = GlobalSettings.objects.get(pk=1)
-        print(self.global_settings)
+        self.global_settings = GlobalSettings.objects.get_global_settings()
+        logging.info(f'Loaded global settings {self.global_settings}')
 
     def save(self, *args, **kwargs):
-
         if not self.issuer:
-            self.issuer = self.global_settings.default_issuer()
+            self.issuer = self.global_settings.default_issuer
 
         if not self.discount_value and not self.tax_value:
-            self.discount_value = self.global_settings.default_discount_value()
-            self.tax_value = self.global_settings.default_tax_value()
+            self.discount_value = self.global_settings.default_discount_value
+            self.tax_value = self.global_settings.default_tax_value
 
         super().save(*args, **kwargs)
 
-    def get_sequence_number(self):
+    @property
+    def sequence_number(self):
         if self.sequence and self.number:
             return f"{self.sequence}-{self.number}"
         else:
             return f"Database id: {self.id}"
 
-    def do_operations(self, orders):
+    @classmethod
+    def create(cls, sequence_number):
+        sequence, number = sequence_number.split('-')
+        return cls.objects.create(sequence=sequence, number=number)
+
+    def calculate_totals(self, orders):
         self.sub_total = self.discount_amount = self.tax_base = self.tax_amount = self.total_due = 0
         for current_order in orders:
             self.sub_total += current_order.line_total
@@ -154,7 +170,7 @@ class Invoice(models.Model):
         self.total_due = self.tax_base + self.tax_amount
 
     def __str__(self):
-        return self.get_sequence_number()
+        return self.sequence_number
 
 
 class Product(models.Model):
