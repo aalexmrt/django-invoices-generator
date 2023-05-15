@@ -78,12 +78,14 @@ class GlobalSettingsManager(models.Manager):
 class GlobalSettings(models.Model):
     issuer = models.ForeignKey(
         Issuer, null=True, blank=True, on_delete=models.CASCADE)
+
     discount_value = models.DecimalField(
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
+    last_number = models.IntegerField(null=True, blank=True, default=0)
+    objects = GlobalSettingsManager()
+    sequence = models.CharField(null=True, blank=True, max_length=100)
     tax_value = models.DecimalField(
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
-
-    objects = GlobalSettingsManager()
 
     def __str__(self):
         return "Global settings"
@@ -97,12 +99,26 @@ class GlobalSettings(models.Model):
         return self.discount_value
 
     @property
+    def last_number(self):
+        return self.last_number
+
+    @property
+    def default_sequence(self):
+        return self.sequence
+
+    @property
     def default_tax_value(self):
         return self.tax_value
 
+    def increase_last_number(self):
+        if self.last_number is None:
+            self.last_number = 0
+        self.last_number += 1
+        self.save()
+        return self.last_number
+
 
 class Invoice(models.Model):
-
     issuer = models.ForeignKey(
         Issuer, null=True, blank=True, on_delete=models.CASCADE)
     customer = models.ForeignKey(
@@ -111,25 +127,26 @@ class Invoice(models.Model):
         GlobalSettings, null=True, blank=True, on_delete=models.CASCADE)
     mail_info = models.OneToOneField(
         MailInfo, null=True, blank=True, on_delete=models.CASCADE)
-    pdf_document = models.FileField(upload_to='invoices_pdf/')
-    sequence = models.CharField(null=True, blank=True, max_length=100)
-    number = models.IntegerField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    discount_amount = models.DecimalField(
+        max_digits=6, decimal_places=2, null=True, blank=True, default=0)
     discount_value = models.DecimalField(
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
-    discount_amount = models.DecimalField(
+    issued_date = models.DateField(null=True, blank=True)
+    number = models.IntegerField(null=True, blank=True)
+    pdf_document = models.FileField(upload_to='invoices_pdf/')
+    sequence = models.CharField(null=True, blank=True, max_length=100)
+    sub_total = models.DecimalField(
+        max_digits=6, decimal_places=2, null=True, blank=True, default=0)
+    tax_amount = models.DecimalField(
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
     tax_base = models.DecimalField(
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
     tax_value = models.DecimalField(
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
-    tax_amount = models.DecimalField(
-        max_digits=6, decimal_places=2, null=True, blank=True, default=0)
-    sub_total = models.DecimalField(
-        max_digits=6, decimal_places=2, null=True, blank=True, default=0)
     total_due = models.DecimalField(
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
-    issued_date = models.DateField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __init__(self, *args, **kwargs):
@@ -140,6 +157,10 @@ class Invoice(models.Model):
     def save(self, *args, **kwargs):
         if not self.issuer:
             self.issuer = self.global_settings.default_issuer
+        if not self.sequence:
+            self.sequence = self.global_settings.default_sequence
+        if not self.number:
+            self.number = self.global_settings.increase_last_number()
 
         if not self.discount_value and not self.tax_value:
             self.discount_value = self.global_settings.default_discount_value
