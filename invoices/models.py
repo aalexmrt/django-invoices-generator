@@ -1,5 +1,6 @@
 import logging
 from django.db import models
+from django.core.exceptions import ValidationError
 
 
 class Address(models.Model):
@@ -82,6 +83,7 @@ class GlobalSettings(models.Model):
     discount_value = models.DecimalField(
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
     last_number = models.IntegerField(null=True, blank=True, default=0)
+    lead_zeros_format = models.IntegerField(null=True, blank=True, default=0)
     objects = GlobalSettingsManager()
     sequence = models.CharField(null=True, blank=True, max_length=100)
     tax_value = models.DecimalField(
@@ -99,8 +101,8 @@ class GlobalSettings(models.Model):
         return self.discount_value
 
     @property
-    def last_number(self):
-        return self.last_number
+    def default_lead_zeros_format(self):
+        return self.lead_zeros_format
 
     @property
     def default_sequence(self):
@@ -147,6 +149,8 @@ class Invoice(models.Model):
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
     total_due = models.DecimalField(
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
+    unique_code_number = models.CharField(
+        null=True, blank=True, max_length=100, unique=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __init__(self, *args, **kwargs):
@@ -161,7 +165,6 @@ class Invoice(models.Model):
             self.sequence = self.global_settings.default_sequence
         if not self.number:
             self.number = self.global_settings.increase_last_number()
-
         if not self.discount_value and not self.tax_value:
             self.discount_value = self.global_settings.default_discount_value
             self.tax_value = self.global_settings.default_tax_value
@@ -171,14 +174,11 @@ class Invoice(models.Model):
     @property
     def sequence_number(self):
         if self.sequence and self.number:
-            return f"{self.sequence}-{self.number}"
+            formatted_number = str(self.number).zfill(
+                self.global_settings.default_lead_zeros_format)
+            return f"{self.sequence}-{formatted_number}"
         else:
             return f"Database id: {self.id}"
-
-    @classmethod
-    def create(cls, sequence_number):
-        sequence, number = sequence_number.split('-')
-        return cls.objects.create(sequence=sequence, number=number)
 
     def calculate_totals(self, orders):
         self.sub_total = self.discount_amount = self.tax_base = self.tax_amount = self.total_due = 0

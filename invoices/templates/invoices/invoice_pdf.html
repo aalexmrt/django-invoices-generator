@@ -1,3 +1,4 @@
+<!--invoice_pdf.html-->
 {% load static %}
 {% block content %}
 <link rel= "stylesheet" type= "text/css" href= "{% static 'invoices/css/render_invoice_pdf_styles.css' %}">
@@ -7,7 +8,7 @@
     <h2 class="title left-margin">FACTURA</h2>
     <div class="invoice-info-detail small-margins left-margin">
       <h3>Número:</h3>
-      <p>{{invoice.sequence}}-{{invoice.number|stringformat:"s"}}</p>
+      <p>{{invoice.sequence_number}}</p>
       <div class="break"></div> <!-- break -->
       <h3>Fecha:</h3>
       <p>{{invoice.issued_date|date:"d/m/Y"}}</p>
@@ -29,8 +30,7 @@
 <main>
   <div class="content-box customer-data">
     <div class="invoice-info-detail item small-margins left-margin">
-      <h3>customere:</h3>
-
+      <h3>Cliente:</h3>
       <p>{{invoice.customer.company.name|upper}}</p>
     </div>
     <div class="invoice-info-detail item small-margins left-margin">
