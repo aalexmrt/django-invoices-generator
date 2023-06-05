@@ -51,7 +51,6 @@ def prepare_msg(contact_name, contact_email, sender_name, email_account, cc_emai
 
 
 def add_attachment(sender_name, files_list, msg_mixed):
-    print(files_list)
     for pdf in files_list:
         original_filename = pdf.__str__()
         # e.g 2023-0010 Company name S.L.pdf

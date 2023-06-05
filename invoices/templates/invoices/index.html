@@ -3,24 +3,24 @@
 {% block main %}
 {% if invoices_list %}
 
-<table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
- <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+<table class="table table-stripped">
+ <thead class="">
    <tr>
      <th scope="col" class="p-4">
-       <div class="flex items-center">
-         <p class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+       <div class="">
+         <p class="">
        </div>
      </th>
-     <th scope="col" class="px-6 py-3">
+     <th scope="col" class=" ">
        Invoice number
        </th>
-           <th scope="col" class="px-6 py-3">
+           <th scope="col" class=" ">
                Date
            </th>
-           <th scope="col" class="px-6 py-3">
+           <th scope="col" class="">
                Mailed
            </th>
-           <th scope="col" class="px-6 py-3">
+           <th scope="col" class=" ">
                Client
            </th>
            <th></th>
@@ -28,26 +28,26 @@
    </thead>
    <tbody>
        {% for invoice in invoices_list %}
-           <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-               <td class="w-14 p-4">
-                   <div class="flex items-center">
+           <tr class="">
+               <td class="">
+                   <div class="">
                        <form action="{% url 'invoice_detail' invoice.id %}">
-                         <button><img src="{% static 'invoices/images/pdf-icon.png' %}"></button>
+                         <button><img src="{% static 'invoices/images/pdf-icon.png' %}" alt="pdf-icon"></button>
                        </form>
                    </div>
                </td>
-               <th scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+               <th scope="row" class="">
                    <div>
                        <div class="text-base font-semibold"><a href="{% url 'make_invoice' invoice.id %}">{{invoice.sequence_number}}</a></div>
                    </div>
                </th>
                <td class="px-6 py-4">
-                   {{invoice.issued_date}}
+                   {{invoice.issued_date|date:"j/m/Y"}}
                </td>
                <td class="px-6 py-4">
 
                    {% if invoice.mail_info.status == 'Delivered' %}
-                       <div class="flex items-center">
+                       <div class="">
                            <div class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"></div> Sent
                        </div>
                    {% else %}
@@ -60,9 +60,9 @@
                    {{invoice.customer}}
                </td>
                <td class="w-14 p-4">
-                   <div class="flex items-center">
+                   <div class="">
                        <form action="{%url 'send_email' invoice.id %}">
-                           <button class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Send</button>
+                           <button class="btn btn-primary">Send</button>
                        </form>
                    </div>
                </td>

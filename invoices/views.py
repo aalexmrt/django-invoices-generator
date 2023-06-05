@@ -24,7 +24,6 @@ def add_invoice(request):
 
     new_invoice = Invoice.objects.create()
     new_invoice.save()
-    print(new_invoice.id)
     return redirect('make_invoice', new_invoice.id)
 
 
@@ -74,6 +73,7 @@ def make_invoice(request, id):
         'invoice': invoice,
         'invoice_form': invoice_form,
         'order_formset': order_formset,
+
     }
     return render(request, 'invoices/form.html', context)
 
@@ -90,7 +90,6 @@ def save_invoice_pdf(request, inv_id):
 
     pdf_render = WeasyTemplateResponse(
         request=request, template='invoices/invoice_pdf.html', context=context).rendered_content
-    print(invoice.customer)
     pdf_file_name = "{}-{}_{}_{}.pdf".format(
         invoice.sequence, invoice.number, invoice.customer.company.name.replace(" ", "-"), invoice.issued_date)
 

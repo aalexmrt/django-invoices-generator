@@ -1,41 +1,25 @@
 {% extends 'invoices/base.html' %}
 {% load static %}
-{% load tailwind_filters %}
+{% load crispy_forms_tags %}
 {% block main %}
-<form method="post" class="w-full m-auto mr-5 ml-5">
-  {% csrf_token %}
-  <h3 class="mb-4 text-3xl font-bold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">
-    Details
-  </h3>
-  <div class="flex w-full m-auto mb-6 gap-4">
-    {{ invoice_form.sequence | as_crispy_field }}
-    {{ invoice_form.number | as_crispy_field }}
-    {{ invoice_form.issued_date | as_crispy_field }}
-    {{ invoice_form.customer | as_crispy_field }}
-  </div>
+<h3 class="mt-4">
+  Details
+</h3>
+<form class="my-class" method="post">
+  {% crispy invoice_form %}
+  <h4 class="mt-4">
+    Order
+  </h4>
+  {{ order_formset.management_form }}
+  {% for order in order_formset %}
+      {% crispy order %}
+      
 
 
-  <div class="w-full mb-6 gap-4 justify-center">
-    {{ order_formset.management_form }}
-    <h3 class="mb-4 text-3xl font-bold leading-none tracking-tight text-gray-900 md:text-1xl dark:text-white">
-      Order
-    </h3>
-    {% for order in order_formset %}
-      <div class="flex w-full mb-6 gap-4 justify-center form-row"> 
-        {{order.id}}
-        {% if order.DELETE %}
-          {{ order.DELETE }}
-        {% endif %}
-        {{order.product|as_crispy_field}}
-        {{order.quantity|as_crispy_field}}
-        {{order.unit_price|as_crispy_field}}
-        <div class="formButtonContainer"></div>
-      </div>
-    {% endfor %}
-    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"  value="Submit">Submit</button>
-  </div>
-
+  {% endfor %}
+  <button type="submit" class="mt-4 btn btn-primary"  value="Submit">Submit</button>
 </form>
+
 <script src="{% static 'invoices/js/dynamic_form.js' %}"></script>
 
 {% endblock %}

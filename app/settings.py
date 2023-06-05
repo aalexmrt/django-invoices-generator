@@ -36,11 +36,10 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'tailwind',
-    'theme',
+    'bootstrap5',
     'django_browser_reload',
     'crispy_forms',
-    'crispy_tailwind',
+    'crispy_bootstrap5',
     'invoices.apps.InvoicesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -140,11 +139,9 @@ MEDIA_ROOT = 'media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-TAILWIND_APP_NAME = 'theme'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
-CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
-
-CRISPY_TEMPLATE_PACK = "tailwind"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 INTERNAL_IPS = [
     "127.0.0.1",
