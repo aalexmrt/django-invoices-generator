@@ -1,7 +1,7 @@
 {% extends 'invoices/base.html' %}
 {% block main %}
-<div class="w-full max-w-2xl m-auto py-4">
- <iframe src="{{ invoice.pdf_document.url }}" width="1000" height="1200" />
+<div class="container py-4">
+ <iframe src="{{ invoice.pdf_document.url }}" width="800" height="900" />
 </div>
 
 {% endblock%}

@@ -2,6 +2,7 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% block main %}
+<div class="container">
 <h3 class="mt-4">
   Details
 </h3>
@@ -19,7 +20,7 @@
   {% endfor %}
   <button type="submit" class="mt-4 btn btn-primary"  value="Submit">Submit</button>
 </form>
-
+</div>
 <script src="{% static 'invoices/js/dynamic_form.js' %}"></script>
 
 {% endblock %}

@@ -1,76 +1,65 @@
 {% extends 'invoices/base.html' %}
 {% load static %}
 {% block main %}
-{% if invoices_list %}
 
-<table class="table table-stripped">
- <thead class="">
-   <tr>
-     <th scope="col" class="p-4">
-       <div class="">
-         <p class="">
-       </div>
-     </th>
-     <th scope="col" class=" ">
-       Invoice number
-       </th>
-           <th scope="col" class=" ">
-               Date
-           </th>
-           <th scope="col" class="">
-               Mailed
-           </th>
-           <th scope="col" class=" ">
-               Client
-           </th>
-           <th></th>
-       </tr>
-   </thead>
-   <tbody>
-       {% for invoice in invoices_list %}
-           <tr class="">
-               <td class="">
-                   <div class="">
-                       <form action="{% url 'invoice_detail' invoice.id %}">
-                         <button><img src="{% static 'invoices/images/pdf-icon.png' %}" alt="pdf-icon"></button>
-                       </form>
-                   </div>
-               </td>
-               <th scope="row" class="">
-                   <div>
-                       <div class="text-base font-semibold"><a href="{% url 'make_invoice' invoice.id %}">{{invoice.sequence_number}}</a></div>
-                   </div>
-               </th>
-               <td class="px-6 py-4">
-                   {{invoice.issued_date|date:"j/m/Y"}}
-               </td>
-               <td class="px-6 py-4">
-
-                   {% if invoice.mail_info.status == 'Delivered' %}
-                       <div class="">
-                           <div class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"></div> Sent
-                       </div>
-                   {% else %}
-                       <div class="flex items-center">
-                           <div class="h-2.5 w-2.5 rounded-full bg-red-400 mr-2"></div> Pending
-                       </div>
-                   {% endif %}
-               </td>
-               <td class="px-6 py-4">
-                   {{invoice.customer}}
-               </td>
-               <td class="w-14 p-4">
-                   <div class="">
-                       <form action="{%url 'send_email' invoice.id %}">
-                           <button class="btn btn-primary">Send</button>
-                       </form>
-                   </div>
-               </td>
-           </tr>
-       {% endfor %}
-   </tbody>
+<div class="container">
+<form action="" method="post">
+{% csrf_token %}
+<table class="table">
+<thead>
+    <tr>
+        <th scope="col" class="p-4 align-middle text-center">
+            <button type="submit" class="btn btn-warning"  value="Submit">Send</button>
+        </th>
+        <th scope="col" class="p-4 align-middle">
+            Number
+        </th>
+        <th scope="col" class="p-4 align-middle">
+            Date
+        </th>
+        <th scope="col" class="p-4 align-middle">
+            Mailed
+        </th>
+        <th scope="col" class="p-4 align-middle">
+            Client
+        </th>
+        <th scope="col" class="p-4 align-middle text-center">
+            File
+        </th>
+    </tr>
+</thead>
+<tbody>
+    {% for invoice in invoices_list %}
+    <tr class="bg-white">
+        <td class="pl-2 p-4 align-middle text-center">
+            <input type="checkbox" name="selected_options" value="{{invoice.id}}">
+        </td>
+        <td class="p-4 align-middle">
+                <a href="{% url 'make_invoice' invoice.id %}">{{invoice.sequence_number}}</a>
+        </td>
+        <td class="p-4 align-middle">
+                {{invoice.issued_date|date:"j/m/Y"}}
+        </td>
+        <td class="p-4 align-middle">
+            {% if invoice.mail_info.status == 'Delivered' %}
+                Sent
+            {% else %}
+                    Pending
+            {% endif %}
+        </td>
+        <td class="p-4 align-middle">
+            {{invoice.customer}}          
+        </td>
+        <td class="p-4 align-middle text-center">
+            <a href="{% url 'invoice_detail' id=invoice.id %}"><img width="24" height="24" src="{% static 'invoices/images/pdf-icon.png' %}" alt="pdf-icon" /></a>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
 </table>
-{% else %}
-   <p>No invoices are available</p>
-{% endif %}
+</form>
+</div>
 {% endblock %}
+    
+
+

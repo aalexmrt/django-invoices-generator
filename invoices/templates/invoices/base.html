@@ -11,39 +11,47 @@
 
 {% load static %}
 <html lang="en">
-	<head>
-    <title>Django Tailwind</title>
+<head>
+  <title>Invoices App</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="{% static 'invoices/images/favicon.ico' %}">
+  <link rel="stylesheet" href="{% static 'invoices/css/styles.css' %}">
+  <style>
+    /* Global styles */
+    /* Header styles */
+    .header {
+      background-color: #222;
+      color: #fff;
+      padding: 20px;
+    }
 
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="{% static 'invoices/images/favicon.ico' %}">
-    <link rel="stylesheet" href="{% static 'invoices/css/styles.css' %}">
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+  </style>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+</head>
 
-		<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	</head>
-
-  <body>
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="{% url 'index' %}">Invoices</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-    
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="{% url 'add_invoice' %}">Add ➕</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-		
-    <div class="container">
-    {% block main %}
-
-    {% endblock %}
+<body>
+  <header class="header">
+    <div class="d-flex align-items-baseline">
+      <div class="logo flex-grow-1 p-2">Invoices App</div>
+      <div class="p-2">
+        <nav class="navigation">
+          {% if request.path != '/' %}
+            <a class="p-4 link-primary" href="{% url 'index' %}">Home</a>
+          {% endif %}
+          <a class="btn btn-warning" role="button" href="{% url 'add_invoice' %}">➕</a> 
+        </nav>
+     </div>
   </div>
-  </body>
-
+  </header>
+<div class="container-fluid">
+{% block main %}
+  <!--Here the content of the page-->
+{% endblock %}
+</div>
+</body>
 </html>

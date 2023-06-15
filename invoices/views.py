@@ -12,6 +12,11 @@ environ.Env.read_env()
 
 
 def index(request):
+
+    if request.method == 'POST':
+        print("form")
+        print(request.POST)
+
     invoices_list = Invoice.objects.order_by('-created_at')
     context = {
         'invoices_list': invoices_list
