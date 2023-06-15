@@ -16,6 +16,7 @@
   </div>
 
   <div class="logo header-item">
+    <img src="{{ invoice.issuer.company.logo.url}}">
     <!-- <img
   TODO PUT IMAGE OF Company -->
   </div>
@@ -46,66 +47,74 @@
   <div class="container-table-products">
     <table id="products" align="center">
       <thead>
-          <tr class="no-border"></tr>
-          <tr>
-              <th>Concepto</th>
-              <th>Concepto</th>
-              <th>Concepto</th>
-              <th>Concepto</th>
-              <th>Concepto</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for order in order_lines %}
-          <tr>
-            <td>{{order.product.name|upper}}</td>
-            <td></td>
-            <td>{{order.quantity}}</td>
-            <td>{{order.unit_price}} €</td>
-            <td class="last-column-bold">{{order.line_total}} €</td>
-          </tr>
-          {% endfor %}
-          {% for i in empty_rows %}
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td class="last-column-bold">- €</td>
-          </tr>
-          {% endfor %}
-          <tr class="no-border"></tr>
-          <tr>
-            <td class="no-border"></td>
-            <td class="no-border"></td>
-            <td class="left-bold-border top-bold-border" colspan="2">Total</td>
-            <td class="last-column top-bold-border">{{invoice.sub_total}} €</td>
-          </tr>
-          <tr>
-            <td class="no-border"></td>
-            <td class="no-border"></td>
-            <td class="left-bold-border" colspan="2">Descuento {{invoice.discount_value}}%</td>
-            <td class="last-column">{{invoice.discount_amount}} €</td>
-          </tr>
-          <tr>
-            <td class="no-border"></td>
-            <td class="no-border"></td>
-            <td class="left-bold-border" colspan="2">Base imponible</td>
-            <td class="last-column">{{invoice.tax_base}} €</td>
-          </tr>
-          <tr>
-            <td class="no-border"></td>
-            <td class="no-border"></td>
-            <td class="left-bold-border" colspan="2">I.V.A {{invoice.tax_value}}%</td>
-            <td class="last-column">{{invoice.tax_amount}} €</td>
-          </tr>
-          <tr>
-            <td class="no-border"></td>
-            <td class="no-border"></td>
-            <td class="left-bold-border" colspan="2">Total factura</td>
-            <td class="last-column-bold">{{invoice.total_due}} €</td>
-          </tr>
-        </tbody>
+        <tr class="no-border">
+          <th colspan="5"></th>
+        </tr>
+        <tr class="no-border"></tr>
+        <tr>
+            <th>Concepto</th>
+            <th>Bultos</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in order_lines %}
+        <tr>
+          <td>{{order.product.name|upper}}</td>
+          <td></td>
+          <td>{{order.quantity}}</td>
+          <td>{{order.unit_price}} €</td>
+          <td class="last-column-bold">{{order.line_total}} €</td>
+        </tr>
+        {% endfor %}
+        {% for i in empty_rows %}
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td class="last-column-bold">- €</td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td class="no-border" colspan="5"></td>
+        </tr>
+        <tr class="no-border"></tr>
+        <tr>
+          <td class="no-border border-top-0"></td>
+          <td class="no-border border-top-0"></td>
+          <td class="left-bold-border align-right top-bold-border border-bottom-0 pr-1" colspan="2">Total</td>
+          <td class="last-column left-bold-border top-bold-border">{{invoice.sub_total}} €</td>
+        </tr>
+        <tr>
+          <td class="no-border border-top-0"></td>
+          <td class="no-border border-top-0"></td>
+          <td class="left-bold-border border-right-0 align-right border-top-0 border-bottom-0 text-red">Descuento</td>
+          <td class="no-border align-right text-red border-top-0 pr-1">{{invoice.discount_value|floatformat:"0"}}%</td>
+          <td class="last-column left-bold-border">{{invoice.discount_amount}} €</td>
+        </tr>
+        <tr>
+          <td class="no-border border-top-0" colspan="2"></td>
+          <td class="left-bold-border align-right pr-1 border-top-0 border-bottom-0" colspan="2">Base imponible</td>
+          <td class="last-column left-bold-border">{{invoice.tax_base}} €</td>
+        </tr>
+        <tr>
+          <td class="no-border border-top-0" colspan="2"></td>
+          <td class="left-bold-border border-right-0 border-top-0 border-bottom-0 align-right">I.V.A</td>
+          <td class="no-border align-right pr-1 border-top-0 border-bottom-0">{{invoice.tax_value|floatformat:"0"}}%</td>
+          <td class="last-column left-bold-border">{{invoice.tax_amount}} €</td>
+        </tr>
+        <tr>
+          <td class="no-border border-top-0" colspan="2"></td>
+          <td class="left-bold-border bottom-bold-border border-top-0 align-right pr-1 text-bold" colspan="2">Total factura</td>
+          <td class="last-column-bold left-bold-border bottom-bold-border">{{invoice.total_due}} €</td>
+        </tr>
+        <tr>
+          <td class="no-border" colspan="5"></td>
+        </tr>
+      </tbody>
     </table>
   </div>
   <div class="content-box payment-data">

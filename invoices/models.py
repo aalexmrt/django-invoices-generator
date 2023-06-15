@@ -36,6 +36,7 @@ class Company(models.Model):
         null=True, blank=True, max_length=100)
     customer_information_file_number = models.CharField(
         null=True, blank=True, max_length=100)
+    logo = models.ImageField(null=True, blank=True, upload_to='company/images')
 
     def __str__(self):
         return self.name

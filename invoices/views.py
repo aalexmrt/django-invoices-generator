@@ -91,7 +91,7 @@ def save_invoice_pdf(request, inv_id):
     context = {}
     context['invoice'] = invoice
     context['order_lines'] = order_lines
-    context['empty_rows'] = range(15 - len(order_lines))
+    context['empty_rows'] = range(16 - len(order_lines))
 
     pdf_render = WeasyTemplateResponse(
         request=request, template='invoices/invoice_pdf.html', context=context).rendered_content
@@ -103,6 +103,18 @@ def save_invoice_pdf(request, inv_id):
     invoice.pdf_document.save(pdf_file_name, ContentFile(pdf_render))
 
     return True
+
+
+def check_pdf(request, id):
+    invoice = Invoice.objects.get(pk=id)
+    order_lines = OrderLine.objects.filter(invoice=invoice)
+
+    context = {}
+    context['invoice'] = invoice
+    context['order_lines'] = order_lines
+    context['empty_rows'] = range(16 - len(order_lines))
+
+    return render(request, 'invoices/invoice_pdf.html', context)
 
 
 def invoice_detail(request, id):

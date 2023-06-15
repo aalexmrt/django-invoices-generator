@@ -29,6 +29,7 @@
     </tr>
 </thead>
 <tbody>
+    {% if invoices_list %}
     {% for invoice in invoices_list %}
     <tr class="bg-white">
         <td class="pl-2 p-4 align-middle text-center">
@@ -55,6 +56,9 @@
         </td>
     </tr>
     {% endfor %}
+    {%else%}
+    <tr><td colspan="6">No invoices available yet...</td></tr>
+    {%endif%}
 </tbody>
 </table>
 </form>
