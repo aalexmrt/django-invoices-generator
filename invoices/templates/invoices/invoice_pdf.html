@@ -22,8 +22,8 @@
   </div>
   <div class="company-data header-item">
     <p>{{invoice.issuer.company.name|upper}}</p>
-    <p>{{invoice.issuer.company.address|upper}}</p>
-    <p>{{invoice.issuer.company.address.street}} {{invoice.issuer.company.address.city|upper}} - {{invoice.issuer.company.address.state|upper}}</p>
+    <p>{{invoice.issuer.company.address.street|upper}}</p>
+    <p>{{invoice.issuer.company.address.postal_code|upper}} {{invoice.issuer.company.address.city|upper}} - {{invoice.issuer.company.address.state|upper}}</p>
     <p>CIF &emsp; {{invoice.issuer.company.customer_information_file_number}}</p>
   </div>
  

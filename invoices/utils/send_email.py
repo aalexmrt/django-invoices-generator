@@ -5,7 +5,7 @@ from email.mime.multipart import MIMEMultipart
 import ssl
 import os
 
-PATH = "media/invoices_pdf"
+PATH = "media/"
 
 
 def prepare_msg(contact_name, contact_email, sender_name, email_account, cc_emails_list, files_list):

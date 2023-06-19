@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.core.files.base import ContentFile
-from invoices.models import Invoice, Issuer, GlobalSettings, MailInfo, OrderLine, Product
+from invoices.models import Customer, Invoice, Issuer, GlobalSettings, MailInfo, OrderLine, Product
 from django.http import HttpResponseRedirect
 from invoices.forms import InvoiceForm, OrderLineFormSet
 from invoices.utils.send_email import *
@@ -14,10 +14,14 @@ environ.Env.read_env()
 def index(request):
 
     if request.method == 'POST':
-        print("form")
-        print(request.POST)
+        data = request.POST
+        ids_invoices = data.getlist('selected_options')
 
-    invoices_list = Invoice.objects.order_by('-created_at')
+        send_invoices(ids_invoices)
+
+        return HttpResponseRedirect('/')
+
+    invoices_list = Invoice.objects.order_by('-number')
     context = {
         'invoices_list': invoices_list
     }
@@ -145,30 +149,57 @@ def send_email(request, id):
     return HttpResponseRedirect('/')
 
 
-# def send_all_invoices(request):
-#     GMAIL = env("GMAIL_ACCOUNT")
-#     GMAIL_PASSWORD = env("GMAIL_ACCOUNT_PWD")
-#     # a little hardcoded
-#     company = Company.objects.get(pk=1)
+def send_invoices(invoices_list):
+    GMAIL = env("GMAIL_ACCOUNT")
+    GMAIL_PASSWORD = env("GMAIL_ACCOUNT_PWD")
+    invoices_list = Invoice.objects.filter(
+        id__in=invoices_list).order_by('customer')
 
-#     # This function gets all the invoices that hasn't been mailed and send them at once
-#     invoices_query = Invoice.objects.filter(mailed=False).order_by('-client')
+    global_settings = GlobalSettings.objects.get_global_settings()
 
-#     clients_list = []
-#     invoices_list = []
-#     # a little hardcoded again
-#     todo_cc = ["", ""]
-#     for invoice in invoices_query:
-#         if invoice.client not in clients_list:
-#             clients_list.append(invoice.client)
+    customers = Customer.objects.all()
 
-#     for client in clients_list:
-#         pdf_query = DocumentPdf.objects.filter(
-#             client=client).filter(invoice__mailed=False)
+    on_hold = None
 
-#         if send_invoice_email(GMAIL, GMAIL_PASSWORD, company.name,
-#                               client.primary_contact.email_account, client.primary_contact.name, todo_cc, pdf_query):
-#             for pdf in pdf_query:
-#                 Invoice.objects.filter(id=pdf.invoice.id).update(mailed=True)
+    # TODO add the part of the email cc
+    todo_cc = ["", ""]
 
-#     return HttpResponseRedirect('/')
+    for customer in customers:
+        on_hold = Invoice.objects.filter(
+            id__in=invoices_list).filter(customer=customer).values_list('pdf_document', flat=True)
+        list = []
+        for pdf in on_hold:
+            list.append(pdf)
+
+        print(list)
+        send_invoice_email(GMAIL, GMAIL_PASSWORD, global_settings.issuer.company.name,
+                           customer.company.contact.email, customer.company.name, todo_cc, on_hold)
+
+    return HttpResponseRedirect('/')
+    # def send_all_invoices(request):
+    #     GMAIL = env("GMAIL_ACCOUNT")
+    #     GMAIL_PASSWORD = env("GMAIL_ACCOUNT_PWD")
+    #     # a little hardcoded
+    #     company = Company.objects.get(pk=1)
+
+    #     # This function gets all the invoices that hasn't been mailed and send them at once
+    #     invoices_query = Invoice.objects.filter(mailed=False).order_by('-client')
+
+    #     clients_list = []
+    #     invoices_list = []
+    #     # a little hardcoded again
+    #     todo_cc = ["", ""]
+    #     for invoice in invoices_query:
+    #         if invoice.client not in clients_list:
+    #             clients_list.append(invoice.client)
+
+    #     for client in clients_list:
+    #         pdf_query = DocumentPdf.objects.filter(
+    #             client=client).filter(invoice__mailed=False)
+
+    #         if send_invoice_email(GMAIL, GMAIL_PASSWORD, company.name,
+    #                               client.primary_contact.email_account, client.primary_contact.name, todo_cc, pdf_query):
+    #             for pdf in pdf_query:
+    #                 Invoice.objects.filter(id=pdf.invoice.id).update(mailed=True)
+
+    #     return HttpResponseRedirect('/')
