@@ -1,6 +1,5 @@
 import logging
 from django.db import models
-from django.core.exceptions import ValidationError
 
 
 class Address(models.Model):
@@ -9,9 +8,14 @@ class Address(models.Model):
     state = models.CharField(null=True, blank=True, max_length=100)
     postal_code = models.CharField(null=True, blank=True, max_length=100)
     country = models.CharField(null=True, blank=True, max_length=100)
+    alias = models.CharField(null=True, blank=True,
+                             max_length=100, default='Default')
 
     def __str__(self):
-        return self.street
+        return f'{self.street} | {self.postal_code} | {self.city} | {self.state} - {self.alias}'
+
+    class Meta:
+        ordering = ['alias']
 
 
 class Contact(models.Model):
@@ -40,6 +44,9 @@ class Company(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']
 
 
 class Issuer(models.Model):
@@ -218,8 +225,8 @@ class OrderLine(models.Model):
     line_total = models.DecimalField(
         max_digits=6, decimal_places=2, null=True, blank=True)
 
-    def __str__(self):
-        return f"Related invoice: {self.invoice.get_sequence_number()}"
+    # def __str__(self):
+    #     return f"Related invoice: {self.invoice.get_sequence_number()}"
 
     def save(self, *args, **kwargs):
         # set default unit price if not already set

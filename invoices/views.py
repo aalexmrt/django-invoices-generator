@@ -129,26 +129,6 @@ def invoice_detail(request, id):
     return render(request, 'invoices/detail.html', context)
 
 
-def send_email(request, id):
-    GMAIL = env("GMAIL_ACCOUNT")
-    GMAIL_PASSWORD = env("GMAIL_ACCOUNT_PWD")
-
-    invoice = Invoice.objects.get(pk=id)
-
-    # TODO add the part of the email cc
-    todo_cc = ["", ""]
-
-    mail_info = MailInfo.objects.create(invoice=invoice)
-    if send_invoice_email(GMAIL, GMAIL_PASSWORD, invoice.company.name, invoice.client.primary_contact.email_account, invoice.client.primary_contact.name, todo_cc, invoice.pdf_document):
-        mail_info.status = 'Delivered'
-        mail_info.save()
-    else:
-        mail_info.status = 'Failed'
-        mail_info.save()
-
-    return HttpResponseRedirect('/')
-
-
 def send_invoices(invoices_list):
     GMAIL = env("GMAIL_ACCOUNT")
     GMAIL_PASSWORD = env("GMAIL_ACCOUNT_PWD")
@@ -159,47 +139,15 @@ def send_invoices(invoices_list):
 
     customers = Customer.objects.all()
 
-    on_hold = None
-
-    # TODO add the part of the email cc
-    todo_cc = ["", ""]
+    invoices_queryset = None
 
     for customer in customers:
-        on_hold = Invoice.objects.filter(
-            id__in=invoices_list).filter(customer=customer).values_list('pdf_document', flat=True)
-        list = []
-        for pdf in on_hold:
-            list.append(pdf)
+        invoices_queryset = Invoice.objects.filter(
+            id__in=invoices_list).filter(customer=customer).values_list('sequence', 'number', 'pdf_document')
+        if not invoices_queryset:
+            continue
 
-        print(list)
         send_invoice_email(GMAIL, GMAIL_PASSWORD, global_settings.issuer.company.name,
-                           customer.company.contact.email, customer.company.name, todo_cc, on_hold)
+                           customer.company.contact.email, customer.company.contact.name, customer.company.contact.cc_email, invoices_queryset)
 
     return HttpResponseRedirect('/')
-    # def send_all_invoices(request):
-    #     GMAIL = env("GMAIL_ACCOUNT")
-    #     GMAIL_PASSWORD = env("GMAIL_ACCOUNT_PWD")
-    #     # a little hardcoded
-    #     company = Company.objects.get(pk=1)
-
-    #     # This function gets all the invoices that hasn't been mailed and send them at once
-    #     invoices_query = Invoice.objects.filter(mailed=False).order_by('-client')
-
-    #     clients_list = []
-    #     invoices_list = []
-    #     # a little hardcoded again
-    #     todo_cc = ["", ""]
-    #     for invoice in invoices_query:
-    #         if invoice.client not in clients_list:
-    #             clients_list.append(invoice.client)
-
-    #     for client in clients_list:
-    #         pdf_query = DocumentPdf.objects.filter(
-    #             client=client).filter(invoice__mailed=False)
-
-    #         if send_invoice_email(GMAIL, GMAIL_PASSWORD, company.name,
-    #                               client.primary_contact.email_account, client.primary_contact.name, todo_cc, pdf_query):
-    #             for pdf in pdf_query:
-    #                 Invoice.objects.filter(id=pdf.invoice.id).update(mailed=True)
-
-    #     return HttpResponseRedirect('/')
