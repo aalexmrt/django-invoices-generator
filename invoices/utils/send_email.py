@@ -98,8 +98,10 @@ def config_mail_server(email_account, email_pwd):
 
 
 def send_invoice_email(email_account, email_pwd, sender_name, contact_email, contact_name, cc_emails_list, files_queryset):
-    cc_emails_list = cc_emails_list.replace(" ", "")
+    if cc_emails_list is None:
+        cc_emails_list = ""
 
+    cc_emails_list = cc_emails_list.replace(" ", "")
     msg_mixed = prepare_msg(contact_name, contact_email,
                             sender_name, email_account, cc_emails_list, files_queryset)
     receiver_email = cc_emails_list.split(",") + [contact_email]
