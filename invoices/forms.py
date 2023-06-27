@@ -16,10 +16,14 @@ class InvoiceForm(ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Row(
-                Column('sequence', css_class='form-group col-md-3 mb-0'),
-                Column('number', css_class='form-group col-md-3 mb-0'),
-                Column('issued_date', css_class='form-group col-md-3 mb-0'),
-                Column('customer', css_class='form-group col-md-3 mb-0'),
+                Column(
+                    'sequence', css_class='form-group col-lg-3 col-md-3 col-sm-2 mb-0'),
+                Column(
+                    'number', css_class='form-group col-lg-3 col-md-3 col-sm-2 mb-0'),
+                Column('issued_date',
+                       css_class='form-group col-lg-3 col-md-3 col-sm-3 mb-0'),
+                Column(
+                    'customer', css_class='form-group col-lg-3 col-md-3 col-sm-5 mb-0'),
                 css_class='form-row'
             )
         )
@@ -41,14 +45,17 @@ class OrderLineForm(ModelForm):
             Row(
                 Column('id', type="hidden", css_class="d-none"),
                 Column('DELETE', type="hidden", css_class="d-none"),
-                Column('product', css_class='form-group col-md-3 mb-0'),
-                Column('quantity', css_class='form-group col-md-3 mb-0'),
-                Column('unit_price', css_class='form-group col-md-3 mb-0'),
+                Column(
+                    'product', css_class='form-group col-lg-3 col-md-3 col-sm-5 mb-0'),
+                Column(
+                    'quantity', css_class='form-group col-lg-3 col-md-3 col-sm-2 mb-0'),
+                Column('unit_price',
+                       css_class='form-group col-lg-3 col-md-3 col-sm-3 mb-0'),
                 Div(
                     Div(
                         HTML("""<label class='empty-div form-label'>&nbsp</label>
                     <button type="button" class="buttonDynamic">Dynamic</button>""")
-                    ), css_class="form-group col-md-1 mb-0"), css_class="formsetDynamic"
+                    ), css_class="form-group col-lg-1 col-md-1 col-sm-1 mb-0"), css_class="formsetDynamic"
             )
         )
 
