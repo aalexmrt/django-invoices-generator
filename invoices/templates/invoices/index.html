@@ -9,7 +9,7 @@
 <thead>
     <tr>
         <th scope="col" class="p-4 align-middle text-center">
-            <button type="submit" class="btn btn-warning"  value="Submit">Send</button>
+            
         </th>
         <th scope="col" class="p-4 align-middle">
             Number
@@ -24,7 +24,7 @@
             Client
         </th>
         <th scope="col" class="p-4 align-middle text-center">
-            File
+            <button type="submit" class="btn btn-dark" value="Submit">Send</button>
         </th>
     </tr>
 </thead>
@@ -41,11 +41,14 @@
         <td class="p-4 align-middle">
                 {{invoice.issued_date|date:"j/m/Y"}}
         </td>
+
         <td class="p-4 align-middle">
             {% if invoice.mail_info.status == 'Delivered' %}
-                Sent
-            {% else %}
-                    Pending
+            <span class="badge rounded-pill bg-success">Sent</span>
+            {% elif invoice.mail_info.status == 'Pending' %}
+            <span class="badge rounded-pill bg-warning">Pending</span>
+            {% elif invoice.mail_info.status == 'Failed' %}
+            <span class="badge rounded-pill bg-danger">Failed</span>
             {% endif %}
         </td>
         <td class="p-4 align-middle">
