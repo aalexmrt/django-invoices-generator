@@ -73,7 +73,7 @@ class MailInfo(models.Model):
     )
     status = models.CharField(
         max_length=10, choices=STATUS_CHOICES, default="Pending")
-    sent_timestamp = models.DateTimeField(auto_now=True)
+    sent_timestamp = models.DateTimeField(default=None, null=True, blank=True)
 
     def __str__(self):
         return self.status

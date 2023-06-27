@@ -1,14 +1,24 @@
-from django.shortcuts import render, redirect
-from django.core.files.base import ContentFile
-from invoices.models import Customer, Invoice, Issuer, GlobalSettings, MailInfo, OrderLine, Product
-from django.http import HttpResponseRedirect
-from invoices.forms import InvoiceForm, OrderLineFormSet
-from invoices.utils.send_email import *
-from django_weasyprint.views import WeasyTemplateResponse
 import environ
+from datetime import datetime
+from django.core.files.base import ContentFile
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django_weasyprint.views import WeasyTemplateResponse
+from invoices.forms import InvoiceForm, OrderLineFormSet
+from invoices.models import (
+    Customer,
+    Invoice,
+    Issuer,
+    GlobalSettings,
+    MailInfo,
+    OrderLine,
+    Product,
+)
+from invoices.utils.send_email import send_invoice_email
 
 env = environ.Env()
-environ.Env.read_env()
+env.read_env()
 
 
 def index(request):
@@ -19,7 +29,7 @@ def index(request):
 
         send_invoices(ids_invoices)
 
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('index'))
 
     invoices_list = Invoice.objects.order_by('-number')
     context = {
@@ -50,6 +60,7 @@ def make_invoice(request, id):
             invoice = invoice_form.save()
             invoice.issuer = Issuer.objects.filter(
                 company__name='issuer').first()
+            invoice.mail_info = MailInfo.objects.create()
             invoice.save()
 
         if order_formset.is_valid():
@@ -143,11 +154,20 @@ def send_invoices(invoices_list):
 
     for customer in customers:
         invoices_queryset = Invoice.objects.filter(
-            id__in=invoices_list).filter(customer=customer).values_list('sequence', 'number', 'pdf_document')
+            id__in=invoices_list).filter(customer=customer).values_list('sequence', 'number', 'pdf_document', 'mail_info')
         if not invoices_queryset:
             continue
 
-        send_invoice_email(GMAIL, GMAIL_PASSWORD, global_settings.issuer.company.name,
-                           customer.company.contact.email, customer.company.contact.name, customer.company.contact.cc_email, invoices_queryset)
+        if send_invoice_email(GMAIL, GMAIL_PASSWORD, global_settings.issuer.company.name,
+                              customer.company.contact.email, customer.company.contact.name, customer.company.contact.cc_email, invoices_queryset):
+            for invoice in invoices_queryset:
+                mail_info_id = invoice[3]
+                MailInfo.objects.filter(
+                    pk=mail_info_id).update(status="Delivered", sent_timestamp=datetime.now())
+        else:
+            for invoice in invoices_queryset:
+                mail_info_id = invoice[3]
+                MailInfo.objects.filter(
+                    pk=mail_info_id).update(status="Failed")
 
     return HttpResponseRedirect('/')
