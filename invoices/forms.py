@@ -17,13 +17,13 @@ class InvoiceForm(ModelForm):
         self.helper.layout = Layout(
             Row(
                 Column(
-                    'sequence', css_class='form-group col-lg-3 col-md-3 col-sm-2 mb-0'),
+                    'sequence', css_class='form-group col-lg-3 col-md-3 col-sm-6 mb-0'),
                 Column(
-                    'number', css_class='form-group col-lg-3 col-md-3 col-sm-2 mb-0'),
+                    'number', css_class='form-group col-lg-3 col-md-3 col-sm-6 mb-0'),
                 Column('issued_date',
                        css_class='form-group col-lg-3 col-md-3 col-sm-3 mb-0'),
                 Column(
-                    'customer', css_class='form-group col-lg-3 col-md-3 col-sm-5 mb-0'),
+                    'customer', css_class='form-group col-lg-3 col-md-3 col-sm-6 mb-0'),
                 css_class='form-row'
             )
         )
@@ -48,7 +48,7 @@ class OrderLineForm(ModelForm):
                 Column(
                     'product', css_class='form-group col-lg-3 col-md-3 col-sm-5 mb-0'),
                 Column(
-                    'quantity', css_class='form-group col-lg-3 col-md-3 col-sm-2 mb-0'),
+                    'quantity', css_class='form-group col-lg-3 col-md-3 col-sm-3 mb-0'),
                 Column('unit_price',
                        css_class='form-group col-lg-3 col-md-3 col-sm-3 mb-0'),
                 Div(
