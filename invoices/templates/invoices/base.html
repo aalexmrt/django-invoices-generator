@@ -21,7 +21,7 @@
     /* Global styles */
     /* Header styles */
     .header {
-      background-color: #222;
+      background-color: #0d6efd;
       color: #fff;
       padding: 20px;
     }
@@ -41,9 +41,8 @@
       <div class="p-2">
         <nav class="navigation">
           {% if request.path != '/' %}
-            <a class="p-4 link-primary" href="{% url 'index' %}">Home</a>
+            <a class="btn btn-light" role="button" href="{% url 'index' %}">Back</a>
           {% endif %} 
-          <a class="btn btn-light" role="button" href="{% url 'add_invoice' %}">➕</a> 
         </nav>
      </div>
   </div>
