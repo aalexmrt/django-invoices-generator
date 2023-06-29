@@ -83,7 +83,9 @@
             {{invoice.customer}}          
         </td>
         <td class="p-4 align-middle ">
-            <a href="{% url 'invoice_detail' id=invoice.id %}"><img width="24" height="24" src="{% static 'invoices/images/pdf-icon.png' %}" alt="pdf-icon" /></a>
+            {% if invoice.pdf_document %}
+                <a href="{{invoice.pdf_document.url}}" target="_blank"><img width="24" height="24" src="{% static 'invoices/images/pdf-icon.png' %}" alt="pdf-icon" /></a>
+            {% endif %}
         </td>
     </tr>
     {% endfor %}
