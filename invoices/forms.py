@@ -1,9 +1,9 @@
-from django.forms import ModelForm, inlineformset_factory, BaseInlineFormSet
-from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column, Div, HTML, Button, ButtonHolder, Field
+from crispy_forms.layout import Column, Div, HTML, Layout, Row
+from django import forms
+from django.forms import BaseInlineFormSet, inlineformset_factory, ModelForm
 
-from invoices.models import Customer, Invoice, OrderLine, Product
+from invoices.models import Address, Company, Contact, Customer, Invoice, OrderLine, Product
 
 
 class InvoiceForm(ModelForm):
@@ -70,3 +70,67 @@ class BaseInlineOrderFormSet(BaseInlineFormSet):
 
 OrderLineFormSet = inlineformset_factory(
     Invoice, OrderLine, form=OrderLineForm, formset=BaseInlineOrderFormSet, fields=('product', 'quantity', 'unit_price'), extra=1, can_delete=True)
+
+
+class ContactForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Row(
+                Column(
+                    'name', css_class='form-group col-lg-3 col-md-3 col-sm-5 mb-0'),
+                Column(
+                    'email', css_class='form-group col-lg-4 col-md-3 col-sm-3 mb-0'),
+                Column(
+                    'cc_email', css_class='form-group col-lg-12 col-md-3 col-sm-3 mb-0'),
+            )
+        )
+
+    class Meta:
+        model = Contact
+        fields = ['name', 'email', 'cc_email']
+
+
+class AddressForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Row(
+                Column(
+                    'street', css_class='form-group col-lg-6 col-md-3 col-sm-5 mb-0'),
+                Column(
+                    'postal_code', css_class='form-group col-lg-3 col-md-3 col-sm-3 mb-0'),
+                Column(
+                    'city', css_class='form-group col-lg-3 col-md-3 col-sm-3 mb-0'),
+            )
+        )
+
+    class Meta:
+        model = Address
+        fields = ['city', 'postal_code', 'street']
+
+
+class CompanyForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['customer_information_file_number'].label = 'CIF'
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Row(
+                Column(
+                    'name', css_class='form-group col-lg-3 col-md-3 col-sm-5 mb-0'),
+                Column(
+                    'customer_information_file_number', css_class='form-group col-lg-2 col-md-3 col-sm-3 mb-0'),
+            )
+        )
+
+    class Meta:
+        model = Company
+        fields = ['name', 'customer_information_file_number']

@@ -1,0 +1,21 @@
+{% extends 'invoices/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block main %}
+<div class="container pb-4">
+  <form class="my-class" method="post">
+    {% csrf_token %}
+
+    <h3 class="mt-4">Company details</h3>
+    {% crispy company_form %}
+    <h3 class="mt-4">Address details</h3>
+    {% crispy address_form %}
+    <h3 class="mt-4">Contact details</h3>
+    {% crispy contact_form %}
+    <div class="text-end">
+      <button type="submit" class="mt-4 btn btn-primary">Submit</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
