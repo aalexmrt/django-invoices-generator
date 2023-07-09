@@ -1,0 +1,15 @@
+.header {
+ background-color: #004ec1;
+ color: #fff;
+ padding: 0.5em;
+}
+
+.logo {
+ font-size: 24px;
+ font-weight: bold;
+}
+
+.empty-div{
+ width: 100%;
+
+}
