@@ -3,16 +3,16 @@ from django.db import models
 
 
 class Address(models.Model):
-    street = models.CharField(null=True, blank=True, max_length=100)
-    city = models.CharField(null=True, blank=True, max_length=100)
+    street = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)
     state = models.CharField(null=True, blank=True, max_length=100)
-    postal_code = models.CharField(null=True, blank=True, max_length=100)
+    postal_code = models.CharField(max_length=100)
     country = models.CharField(null=True, blank=True, max_length=100)
     alias = models.CharField(null=True, blank=True,
                              max_length=100, default='Default')
 
     def __str__(self):
-        return f'{self.street} | {self.postal_code} | {self.city} | {self.state} - {self.alias}'
+        return f'{self.street}, {self.postal_code}, {self.city}'
 
     class Meta:
         ordering = ['alias']
@@ -22,7 +22,6 @@ class Contact(models.Model):
     name = models.CharField(null=True, blank=True, max_length=100)
     phone_number = models.CharField(null=True, blank=True, max_length=100)
     email = models.CharField(null=True, blank=True, max_length=100)
-    # TODO: convert cc_email to a list of emails, it can be 0, 1 or more emails in this field
     cc_email = models.CharField(null=True, blank=True, max_length=100)
     country = models.CharField(null=True, blank=True, max_length=100)
 
@@ -35,14 +34,15 @@ class Company(models.Model):
         Address, on_delete=models.CASCADE, null=True, blank=True)
     contact = models.ForeignKey(
         Contact, on_delete=models.CASCADE, null=True, blank=True)
-    name = models.CharField(null=True, blank=True, max_length=100)
+    name = models.CharField(max_length=100)
     bank_account_number = models.CharField(
         null=True, blank=True, max_length=100)
-    customer_information_file_number = models.CharField(
-        null=True, blank=True, max_length=100)
+    customer_information_file_number = models.CharField(max_length=100)
     logo = models.ImageField(null=True, blank=True, upload_to='company/images')
 
     def __str__(self):
+        if self.name is None:
+            return self.id
         return self.name
 
     class Meta:
@@ -54,7 +54,9 @@ class Issuer(models.Model):
         Company, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return self.company.name
+        if self.company is None:
+            return str(self.id)
+        return str(self.company)
 
 
 class Customer(models.Model):
@@ -62,7 +64,9 @@ class Customer(models.Model):
         Company, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.company.name
+        if self.company is None:
+            return str(self.id)
+        return str(self.company)
 
 
 class MailInfo(models.Model):
@@ -79,11 +83,6 @@ class MailInfo(models.Model):
         return self.status
 
 
-class GlobalSettingsManager(models.Manager):
-    def get_global_settings(self):
-        return self.get(pk=1)
-
-
 class GlobalSettings(models.Model):
     issuer = models.ForeignKey(
         Issuer, null=True, blank=True, on_delete=models.CASCADE)
@@ -92,7 +91,6 @@ class GlobalSettings(models.Model):
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
     last_number = models.IntegerField(null=True, blank=True, default=0)
     lead_zeros_format = models.IntegerField(null=True, blank=True, default=0)
-    objects = GlobalSettingsManager()
     sequence = models.CharField(null=True, blank=True, max_length=100)
     tax_value = models.DecimalField(
         max_digits=6, decimal_places=2, null=True, blank=True, default=0)
@@ -163,7 +161,8 @@ class Invoice(models.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.global_settings = GlobalSettings.objects.get_global_settings()
+        self.global_settings = GlobalSettings.objects.filter().first()
+
         logging.info(f'Loaded global settings {self.global_settings}')
 
     def save(self, *args, **kwargs):
