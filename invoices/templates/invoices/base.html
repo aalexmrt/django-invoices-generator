@@ -1,76 +1,80 @@
 <!DOCTYPE html>
-{# Load the tag library #}
 {% load bootstrap5 %}
-
-{# Load CSS and JavaScript #}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-
-{# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
-
 {% load static %}
+
 <html lang="en">
 <head>
   <title>Invoices App</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="{% static 'invoices/images/favicon.ico' %}">
-  <link rel="stylesheet" href="{% static 'invoices/css/styles.css' %}">
-  <style>
-    /* Global styles */
-    /* Header styles */
-    .header {
-      background-color: #0d6efd;
-      color: #fff;
-      padding: 0.5em;
-    }
-
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-    }
-  </style>
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="{% static 'invoices/css/base.css' %}">
+  {% block css %}
+  <!-- Additional CSS files specific to each template -->
+  {% endblock %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
 </head>
 
 <body>
-<header class="header">
-  <div class="d-flex align-items-baseline">
+  {% csrf_token %}
+  <div class="d-flex align-items-baseline header">
     <div class="logo flex-grow-1 p-2">Invoices App</div>
     <div class="p-2">
-      <nav class="navigation">
-        {% if request.path != '/' %}
-          <a class="btn btn btn-outline-light" role="button" href="{% url 'index' %}">Back</a>
-        {% endif %} 
-      </nav>
-      {%if request.path == '/' %}
+
+
         <nav class="nav justify-content-end mt-2">
-          <a class="btn btn btn-outline-light m-1" role="button" href="{% url 'add_invoice' %}">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-              </svg>
+          {% if 'view_invoices' in request.resolver_match.view_name %}
+          <a class="btn btn btn-outline-light disabled m-1" role="button" href="{% url 'view_invoices' %}">
+            Invoices
           </a>
-          <button type="submit" class="btn btn btn-outline-light m-1" value="Submit">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
-              <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
-              </svg>
-          </button>
-          <!-- <button type="submit" class="btn btn btn-outline-light m-1" value="Submit">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
-              <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
-              <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
-              </svg>
-          </button> -->
+          {% else %}
+          <a class="btn btn btn-outline-light m-1" role="button" href="{% url 'view_invoices' %}">
+            Invoices
+          </a>
+          {%endif%}
+
+          {% if 'make_invoice' in request.resolver_match.view_name %}
+          
+          <a class="btn btn btn-outline-light m-1 disabled" role="button" href="{% url 'add_invoice' %}">
+            Add invoice
+          </a>
+          {%else%}
+          <a class="btn btn btn-outline-light m-1" role="button" href="{% url 'add_invoice' %}">
+            Add invoice
+          </a>
+          {%endif%}
+
+          {% if 'view_customers' in request.resolver_match.view_name %}
+          <a class="btn btn btn-outline-light disabled m-1" role="button" href="{% url 'view_customers' %}">
+            Customers
+          </a>
+          {%else%}
+          <a class="btn btn btn-outline-light m-1" role="button" href="{% url 'view_customers' %}">
+            Customers</a>
+          {%endif%}
+
+          {% if 'make_customer' in request.resolver_match.view_name %} 
+          <a class="btn btn btn-outline-light disabled m-1" role="button" href="{% url 'add_customer' %}">
+            Add customer
+          </a>
+          {%else%}
+          <a class="btn btn btn-outline-light m-1" role="button" href="{% url 'add_customer' %}">
+            Add customer</a>
+          {% endif %}
+
         </nav>
-    {%endif%}
+      
     </div>
-</div>
-</header>
-<div class="container-fluid">
-{% block main %}
-  <!--Here the content of the page-->
-{% endblock %}
-</div>
+  </div>
+
+  {% block main %}
+    <!-- Here goes the content of the page -->
+  {% endblock %}
+
+  {% block javascript %}
+    <!-- Additional JavaScript files specific to each template -->
+  {% endblock %}
+
 </body>
 </html>
