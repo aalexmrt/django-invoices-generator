@@ -1,56 +1,47 @@
-import environ
 from datetime import datetime
-from django.core.files.base import ContentFile
+
+import environ
+from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.shortcuts import render, redirect, get_object_or_404
 from django_weasyprint.views import WeasyTemplateResponse
-from invoices.forms import InvoiceForm, OrderLineFormSet
+from django.core.files.base import ContentFile
+from invoices.forms import AddressForm, CompanyForm, ContactForm, InvoiceForm, OrderLineFormSet
 from invoices.models import (
+    Address,
+    Company,
+    Contact,
     Customer,
-    Invoice,
-    Issuer,
     GlobalSettings,
+    Invoice,
     MailInfo,
     OrderLine,
     Product,
 )
 from invoices.utils.send_email import send_invoice_email
-
 env = environ.Env()
 env.read_env()
 
 
-def index(request):
-
-    if request.method == 'POST':
-        data = request.POST
-        ids_invoices = data.getlist('selected_options')
-
-        send_invoices(ids_invoices)
-
-        return HttpResponseRedirect(reverse('index'))
-
+def view_invoices(request):
     invoices_list = Invoice.objects.order_by('-number')
     context = {
         'invoices_list': invoices_list
     }
-
-    return render(request, 'invoices/index.html', context)
+    return render(request, 'invoices/view_invoices.html', context)
 
 
 def add_invoice(request):
 
     new_invoice = Invoice.objects.create()
     new_invoice.save()
+    print('from add_invoice', new_invoice.issuer)
     return redirect('make_invoice', new_invoice.id)
 
 
 def make_invoice(request, id):
-
     invoice = Invoice.objects.get(pk=id)
     order_lines = OrderLine.objects.filter(invoice=invoice)
-
     if request.method == 'POST':
         invoice_form = InvoiceForm(request.POST, instance=invoice)
         order_formset = OrderLineFormSet(
@@ -58,8 +49,6 @@ def make_invoice(request, id):
 
         if invoice_form.is_valid():
             invoice = invoice_form.save()
-            invoice.issuer = Issuer.objects.filter(
-                company__name='issuer').first()
             invoice.mail_info = MailInfo.objects.create()
             invoice.save()
 
@@ -82,7 +71,7 @@ def make_invoice(request, id):
             invoice.save()
             save_invoice_pdf(request, id)
 
-            return redirect('index')
+            return redirect('view_invoices')
 
     elif request.method == 'GET':  # GET request
         invoice_form = InvoiceForm(instance=invoice)
@@ -95,7 +84,18 @@ def make_invoice(request, id):
         'order_formset': order_formset,
 
     }
-    return render(request, 'invoices/form.html', context)
+
+    return render(request, 'invoices/form_invoice.html', context)
+
+
+def delete_invoice(request, id):
+    try:
+        Invoice.objects.get(pk=id).delete()
+    except:
+        messages.error(request, 'Something went wrong')
+        return redirect('view_invoices')
+
+    return redirect('view_invoices')
 
 
 def save_invoice_pdf(request, inv_id):
@@ -140,34 +140,108 @@ def invoice_detail(request, id):
     return render(request, 'invoices/detail.html', context)
 
 
-def send_invoices(invoices_list):
-    GMAIL = env("GMAIL_ACCOUNT")
-    GMAIL_PASSWORD = env("GMAIL_ACCOUNT_PWD")
-    invoices_list = Invoice.objects.filter(
-        id__in=invoices_list).order_by('customer')
+def send_invoices(request):
 
-    global_settings = GlobalSettings.objects.get_global_settings()
+    if request.method == 'POST':
+        data = request.POST
+        invoices_list = data.getlist('selected_options')
+        GMAIL = env("GMAIL_ACCOUNT")
+        GMAIL_PASSWORD = env("GMAIL_ACCOUNT_PWD")
+        invoices_list = Invoice.objects.filter(
+            id__in=invoices_list).order_by('customer')
 
-    customers = Customer.objects.all()
+        global_settings = GlobalSettings.objects.filter().first()
 
-    invoices_queryset = None
+        customers = Customer.objects.all()
 
-    for customer in customers:
-        invoices_queryset = Invoice.objects.filter(
-            id__in=invoices_list).filter(customer=customer).values_list('sequence', 'number', 'pdf_document', 'mail_info')
-        if not invoices_queryset:
-            continue
+        invoices_queryset = None
 
-        if send_invoice_email(GMAIL, GMAIL_PASSWORD, global_settings.issuer.company.name,
-                              customer.company.contact.email, customer.company.contact.name, customer.company.contact.cc_email, invoices_queryset):
-            for invoice in invoices_queryset:
-                mail_info_id = invoice[3]
-                MailInfo.objects.filter(
-                    pk=mail_info_id).update(status="Delivered", sent_timestamp=datetime.now())
-        else:
-            for invoice in invoices_queryset:
-                mail_info_id = invoice[3]
-                MailInfo.objects.filter(
-                    pk=mail_info_id).update(status="Failed")
+        for customer in customers:
+            invoices_queryset = Invoice.objects.filter(
+                id__in=invoices_list).filter(customer=customer).values_list('sequence', 'number', 'pdf_document', 'mail_info')
+            if not invoices_queryset:
+                continue
 
-    return HttpResponseRedirect('/')
+            if send_invoice_email(GMAIL, GMAIL_PASSWORD, global_settings.issuer.company.name,
+                                  customer.company.contact.email, customer.company.contact.name, customer.company.contact.cc_email, invoices_queryset):
+                for invoice in invoices_queryset:
+                    mail_info_id = invoice[3]
+                    MailInfo.objects.filter(
+                        pk=mail_info_id).update(status="Delivered", sent_timestamp=datetime.now())
+            else:
+                for invoice in invoices_queryset:
+                    mail_info_id = invoice[3]
+                    MailInfo.objects.filter(
+                        pk=mail_info_id).update(status="Failed")
+
+        return HttpResponseRedirect('/')
+
+
+def add_customer(request):
+    new_customer = Customer.objects.create()
+    new_customer.save()
+    return redirect('make_customer', new_customer.id)
+
+
+def make_customer(request, id):
+    # Get the customer object or return a 404 response if it doesn't exist
+    customer = get_object_or_404(Customer, pk=id)
+    print(request.POST)
+    if request.method == 'POST':
+        contact_form = ContactForm(request.POST)
+        address_form = AddressForm(request.POST)
+        company_form = CompanyForm(request.POST)
+
+        if contact_form.is_valid() and address_form.is_valid() and company_form.is_valid():
+            contact = contact_form.save()
+            address = address_form.save()
+            company = company_form.save(commit=False)
+            company.contact = contact
+            company.address = address
+            company.save()
+
+            customer.company = company
+            customer.save()
+
+            return redirect('view_customers')
+
+    else:  # GET request
+        contact_form = ContactForm(
+            instance=customer.company.contact) if customer.company else ContactForm()
+        address_form = AddressForm(
+            instance=customer.company.address) if customer.company else AddressForm()
+        company_form = CompanyForm(
+            instance=customer.company) if customer.company else CompanyForm()
+
+    context = {
+        'contact_form': contact_form,
+        'address_form': address_form,
+        'company_form': company_form,
+    }
+
+    return render(request, 'invoices/form_customer.html', context)
+
+
+def view_customers(request):
+    customer_list = Customer.objects.order_by('-company')
+    context = {
+        'customer_list': customer_list
+    }
+    return render(request, 'invoices/view_customers.html', context)
+
+
+def delete_customer(request, id):
+    try:
+        customer = get_object_or_404(Customer, pk=id)
+        company = customer.company
+        company.address.delete()
+        company.contact.delete()
+        company.delete()
+        customer.delete()
+        messages.success(request, 'Customer deleted successfully')
+    except Customer.DoesNotExist:
+        messages.error(request, 'Customer not found')
+    except Exception as e:
+        messages.error(request, f'Something went wrong: {str(e)}')
+
+    return redirect('view_customers')

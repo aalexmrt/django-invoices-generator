@@ -1,57 +1,63 @@
 <!DOCTYPE html>
-{# Load the tag library #}
 {% load bootstrap5 %}
-
-{# Load CSS and JavaScript #}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-
-{# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
-
 {% load static %}
+
 <html lang="en">
 <head>
   <title>Invoices App</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="{% static 'invoices/images/favicon.ico' %}">
-  <link rel="stylesheet" href="{% static 'invoices/css/styles.css' %}">
-  <style>
-    /* Global styles */
-    /* Header styles */
-    .header {
-      background-color: #222;
-      color: #fff;
-      padding: 20px;
-    }
-
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-    }
-  </style>
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="{% static 'invoices/css/base.css' %}">
+  {% block css %}
+  <!-- Additional CSS files specific to each template -->
+  {% endblock %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
 </head>
 
 <body>
-  <header class="header">
-    <div class="d-flex align-items-baseline">
-      <div class="logo flex-grow-1 p-2">Invoices App</div>
-      <div class="p-2">
-        <nav class="navigation">
-          {% if request.path != '/' %}
-            <a class="p-4 link-primary" href="{% url 'index' %}">Home</a>
-          {% endif %} 
-          <a class="btn btn-light" role="button" href="{% url 'add_invoice' %}">➕</a> 
-        </nav>
-     </div>
+  
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid p-2">
+    <a class="navbar-brand" href="{% url 'view_invoices' %}">Invoices App</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Invoices
+            </a>
+            <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
+              <li><a class="dropdown-item" href="{% url 'add_invoice' %}">New item</a></li>
+              <li><a class="dropdown-item" href="{% url 'view_invoices' %}">View</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Customers
+            </a>
+            <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
+              <li><a class="dropdown-item" href="{% url 'add_customer' %}">New item</a></li>
+              <li><a class="dropdown-item" href="{% url 'view_customers' %}">View</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
-  </header>
-<div class="container-fluid">
-{% block main %}
-  <!--Here the content of the page-->
-{% endblock %}
-</div>
+  </nav>
+
+  {% block main %}
+    <!-- Here goes the content of the page -->
+  {% endblock %}
+
+  {% block javascript %}
+    <!-- Additional JavaScript files specific to each template -->
+  {% endblock %}
+
 </body>
 </html>
