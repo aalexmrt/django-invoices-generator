@@ -140,37 +140,41 @@ def invoice_detail(request, id):
     return render(request, 'invoices/detail.html', context)
 
 
-def send_invoices(invoices_list):
-    GMAIL = env("GMAIL_ACCOUNT")
-    GMAIL_PASSWORD = env("GMAIL_ACCOUNT_PWD")
-    invoices_list = Invoice.objects.filter(
-        id__in=invoices_list).order_by('customer')
+def send_invoices(request):
 
-    global_settings = GlobalSettings.objects.get_global_settings()
+    if request.method == 'POST':
+        data = request.POST
+        invoices_list = data.getlist('selected_options')
+        GMAIL = env("GMAIL_ACCOUNT")
+        GMAIL_PASSWORD = env("GMAIL_ACCOUNT_PWD")
+        invoices_list = Invoice.objects.filter(
+            id__in=invoices_list).order_by('customer')
 
-    customers = Customer.objects.all()
+        global_settings = GlobalSettings.objects.filter().first()
 
-    invoices_queryset = None
+        customers = Customer.objects.all()
 
-    for customer in customers:
-        invoices_queryset = Invoice.objects.filter(
-            id__in=invoices_list).filter(customer=customer).values_list('sequence', 'number', 'pdf_document', 'mail_info')
-        if not invoices_queryset:
-            continue
+        invoices_queryset = None
 
-        if send_invoice_email(GMAIL, GMAIL_PASSWORD, global_settings.issuer.company.name,
-                              customer.company.contact.email, customer.company.contact.name, customer.company.contact.cc_email, invoices_queryset):
-            for invoice in invoices_queryset:
-                mail_info_id = invoice[3]
-                MailInfo.objects.filter(
-                    pk=mail_info_id).update(status="Delivered", sent_timestamp=datetime.now())
-        else:
-            for invoice in invoices_queryset:
-                mail_info_id = invoice[3]
-                MailInfo.objects.filter(
-                    pk=mail_info_id).update(status="Failed")
+        for customer in customers:
+            invoices_queryset = Invoice.objects.filter(
+                id__in=invoices_list).filter(customer=customer).values_list('sequence', 'number', 'pdf_document', 'mail_info')
+            if not invoices_queryset:
+                continue
 
-    return HttpResponseRedirect('/')
+            if send_invoice_email(GMAIL, GMAIL_PASSWORD, global_settings.issuer.company.name,
+                                  customer.company.contact.email, customer.company.contact.name, customer.company.contact.cc_email, invoices_queryset):
+                for invoice in invoices_queryset:
+                    mail_info_id = invoice[3]
+                    MailInfo.objects.filter(
+                        pk=mail_info_id).update(status="Delivered", sent_timestamp=datetime.now())
+            else:
+                for invoice in invoices_queryset:
+                    mail_info_id = invoice[3]
+                    MailInfo.objects.filter(
+                        pk=mail_info_id).update(status="Failed")
+
+        return HttpResponseRedirect('/')
 
 
 def add_customer(request):

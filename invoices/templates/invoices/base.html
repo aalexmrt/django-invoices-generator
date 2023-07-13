@@ -17,56 +17,39 @@
 </head>
 
 <body>
-  {% csrf_token %}
-  <div class="d-flex align-items-baseline header">
-    <div class="logo flex-grow-1 p-2">Invoices App</div>
-    <div class="p-2">
-
-
-        <nav class="nav justify-content-end mt-2">
-          {% if 'view_invoices' in request.resolver_match.view_name %}
-          <a class="btn btn btn-outline-light disabled m-1" role="button" href="{% url 'view_invoices' %}">
-            Invoices
-          </a>
-          {% else %}
-          <a class="btn btn btn-outline-light m-1" role="button" href="{% url 'view_invoices' %}">
-            Invoices
-          </a>
-          {%endif%}
-
-          {% if 'make_invoice' in request.resolver_match.view_name %}
-          
-          <a class="btn btn btn-outline-light m-1 disabled" role="button" href="{% url 'add_invoice' %}">
-            Add invoice
-          </a>
-          {%else%}
-          <a class="btn btn btn-outline-light m-1" role="button" href="{% url 'add_invoice' %}">
-            Add invoice
-          </a>
-          {%endif%}
-
-          {% if 'view_customers' in request.resolver_match.view_name %}
-          <a class="btn btn btn-outline-light disabled m-1" role="button" href="{% url 'view_customers' %}">
-            Customers
-          </a>
-          {%else%}
-          <a class="btn btn btn-outline-light m-1" role="button" href="{% url 'view_customers' %}">
-            Customers</a>
-          {%endif%}
-
-          {% if 'make_customer' in request.resolver_match.view_name %} 
-          <a class="btn btn btn-outline-light disabled m-1" role="button" href="{% url 'add_customer' %}">
-            Add customer
-          </a>
-          {%else%}
-          <a class="btn btn btn-outline-light m-1" role="button" href="{% url 'add_customer' %}">
-            Add customer</a>
-          {% endif %}
-
-        </nav>
-      
+  
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid p-2">
+    <a class="navbar-brand" href="{% url 'view_invoices' %}">Invoices App</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Invoices
+            </a>
+            <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
+              <li><a class="dropdown-item" href="{% url 'add_invoice' %}">New item</a></li>
+              <li><a class="dropdown-item" href="{% url 'view_invoices' %}">View</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Customers
+            </a>
+            <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
+              <li><a class="dropdown-item" href="{% url 'add_customer' %}">New item</a></li>
+              <li><a class="dropdown-item" href="{% url 'view_customers' %}">View</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
+  </nav>
 
   {% block main %}
     <!-- Here goes the content of the page -->
