@@ -5,4 +5,4 @@ django-browser-reload==1.11.0
 django-crispy-forms==2.0
 django-environ==0.10.0
 django-weasyprint==2.2.0
-weasyprint==59.0
+weasyprint==58.0
