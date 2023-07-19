@@ -233,10 +233,11 @@ def view_customers(request):
 def delete_customer(request, id):
     try:
         customer = get_object_or_404(Customer, pk=id)
-        company = customer.company
-        company.address.delete()
-        company.contact.delete()
-        company.delete()
+        if customer.company:
+            company = customer.company
+            company.address.delete()
+            company.contact.delete()
+            company.delete()
         customer.delete()
         messages.success(request, 'Customer deleted successfully')
     except Customer.DoesNotExist:
