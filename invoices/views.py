@@ -193,15 +193,37 @@ def make_customer(request, id):
         company_form = CompanyForm(request.POST)
 
         if contact_form.is_valid() and address_form.is_valid() and company_form.is_valid():
-            contact = contact_form.save()
-            address = address_form.save()
-            company = company_form.save(commit=False)
-            company.contact = contact
-            company.address = address
-            company.save()
 
-            customer.company = company
-            customer.save()
+            if customer.company:  # Update existing company, contact, and address
+                company = customer.company
+                print(company_form.cleaned_data)
+                company.name = company_form.cleaned_data['name']
+                company.customer_information_file_number = company_form.cleaned_data[
+                    'customer_information_file_number']
+                company.contact.name = contact_form.cleaned_data['name']
+                company.contact.email = contact_form.cleaned_data['email']
+                company.contact.cc_email = contact_form.cleaned_data['cc_email']
+                company.address.street = address_form.cleaned_data['street']
+                company.address.city = address_form.cleaned_data['city']
+                company.address.postal_code = address_form.cleaned_data['postal_code']
+
+                company.contact.save()
+                company.address.save()
+                company.save()
+            else:  # Create a new company if it doesn't exist
+                contact = contact_form.save()
+                address = address_form.save()
+                company = Company.objects.create(
+                    name=company_form.cleaned_data['name'],
+                    customer_information_file_number=company_form.cleaned_data[
+                        'customer_information_file_number'],
+                    contact=contact,
+                    address=address
+                )
+                customer.company = company
+                customer.save()
+
+            messages.success(request, 'Customer saved successfully')
 
             return redirect('view_customers')
 
