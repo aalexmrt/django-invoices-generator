@@ -73,6 +73,8 @@ OrderLineFormSet = inlineformset_factory(
 
 
 class ContactForm(ModelForm):
+    prefix = 'contact'
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -94,6 +96,7 @@ class ContactForm(ModelForm):
 
 
 class AddressForm(ModelForm):
+    prefix = 'address'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -116,6 +119,7 @@ class AddressForm(ModelForm):
 
 
 class CompanyForm(ModelForm):
+    prefix = 'company'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
