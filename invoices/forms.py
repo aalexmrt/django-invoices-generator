@@ -2,6 +2,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Column, Div, HTML, Layout, Row
 from django import forms
 from django.forms import BaseInlineFormSet, inlineformset_factory, ModelForm
+from django.forms.widgets import NumberInput
 
 from invoices.models import Address, Company, Contact, Customer, Invoice, OrderLine, Product
 
@@ -9,6 +10,7 @@ from invoices.models import Address, Company, Contact, Customer, Invoice, OrderL
 class InvoiceForm(ModelForm):
     customer = forms.ModelChoiceField(
         queryset=Customer.objects.all())
+    issued_date = forms.DateField(widget=NumberInput(attrs={'type': 'date'}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
