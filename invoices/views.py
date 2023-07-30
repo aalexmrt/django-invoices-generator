@@ -245,7 +245,7 @@ def make_customer(request, id):
 
 
 def view_customers(request):
-    customer_list = Customer.objects.order_by('-company')
+    customer_list = Customer.objects.order_by('company')
     context = {
         'customer_list': customer_list
     }

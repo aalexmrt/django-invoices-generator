@@ -9,7 +9,7 @@ from invoices.models import Address, Company, Contact, Customer, Invoice, OrderL
 
 class InvoiceForm(ModelForm):
     customer = forms.ModelChoiceField(
-        queryset=Customer.objects.all())
+        queryset=Customer.objects.order_by('company'))
     issued_date = forms.DateField(widget=NumberInput(attrs={'type': 'date'}))
 
     def __init__(self, *args, **kwargs):
