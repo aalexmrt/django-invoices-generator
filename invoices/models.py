@@ -211,6 +211,9 @@ class Product(models.Model):
 
     def default_unit_price(self):
         return self.price
+    
+    class Meta:
+        ordering = ['name']
 
 
 class OrderLine(models.Model):

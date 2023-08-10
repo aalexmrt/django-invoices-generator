@@ -36,7 +36,7 @@ class InvoiceForm(ModelForm):
 
 
 class OrderLineForm(ModelForm):
-    product = forms.ModelChoiceField(queryset=Product.objects.all())
+    product = forms.ModelChoiceField(queryset=Product.objects.order_by('name'))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
