@@ -1,21 +1,18 @@
 # Invoices App
 
-This web application, built using the Django framework, allows users to effortlessly generate invoices and send them via email. It is designed to streamline the invoicing process for businesses and individuals, enabling them to create professional-looking invoices and efficiently manage their billing operations.
+This web application, built using the Django framework, allows users to generate invoices and send them via email. It is designed to streamline the invoicing process for small businesses, enabling them to efficiently manage their billing operations.
 
+## Demo preview
 
-## Screenshots
+A quick demo of how to add a new invoice and show its preview.
 
-### View invoices
-- Show all the invoices records.
-
-![Alt text](docs/images/view_invoices.png)
-
-### Form invoices
-- Add a new invoice record.
-
-![Alt text](docs/images/form_invoices.png)
+![Add invoice](docs/gifs/add_invoice.gif)
 
 ## Requirements
+
+It's mandatory to set up the .env file to enable the mailing functionality. There's an example of this file in the app folder.
+
+## How to use
 
 Follow these instructions to set up a Python virtual environment (venv) and install the necessary dependencies to run the application.
 
@@ -54,9 +51,6 @@ pip install -r requirements.txt
 Note: Remember to activate the virtual environment (source env/bin/activate for macOS and Linux, or .\env\Scripts\activate for Windows) each time you work on the project or run the application.
 
 By following these instructions, you should have your environment ready to run the application without any issues.
-
-
-
 
 
 ## Contributing
