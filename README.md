@@ -2,7 +2,7 @@
 
 This web application, built using the Django framework, allows users to generate invoices and send them via email. It is designed to streamline the invoicing process for small businesses, enabling them to efficiently manage their billing operations.
 
-## Demo preview
+## Demo
 
 A quick demo of how to add a new invoice and show its preview.
 
