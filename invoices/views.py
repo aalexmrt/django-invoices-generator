@@ -8,9 +8,7 @@ from django_weasyprint.views import WeasyTemplateResponse
 from django.core.files.base import ContentFile
 from invoices.forms import AddressForm, CompanyForm, ContactForm, InvoiceForm, OrderLineFormSet
 from invoices.models import (
-    Address,
     Company,
-    Contact,
     Customer,
     GlobalSettings,
     Invoice,
@@ -268,3 +266,16 @@ def delete_customer(request, id):
         messages.error(request, f'Something went wrong: {str(e)}')
 
     return redirect('view_customers')
+
+
+def save_all_invoices_pdf(request):
+    invoices = Invoice.objects.all()
+    for invoice in invoices:
+        # Update mail status
+        MailInfo.objects.filter(
+            pk=invoice.mail_info_id).update(status="Delivered", sent_timestamp=datetime.now())
+        
+        save_invoice_pdf(request, invoice.id)
+        print("invoice ", invoice.sequence_number, "saved successfully")
+
+    return redirect('view_invoices')

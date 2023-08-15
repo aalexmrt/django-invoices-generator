@@ -16,6 +16,8 @@ urlpatterns = [
     path('make_invoice/<int:id>/', views.make_invoice, name='make_invoice'),
     path('view_customers/', views.view_customers, name='view_customers'),
     path('view_invoices/', views.view_invoices, name='view_invoices'),
+    path('save_all_invoices_pdf/', views.save_all_invoices_pdf,
+         name='save_all_invoices_pdf'),
     path('send_invoices/', views.send_invoices, name='send_invoices'),
     path('', lambda req: redirect('/view_invoices/')),
 ]
