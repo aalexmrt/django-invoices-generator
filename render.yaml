@@ -3,7 +3,7 @@ services:
     name: mysite
     runtime: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn mysite.wsgi:application"
+    startCommand: "gunicorn app.wsgi:application"
     envVars:
       - key: SECRET_KEY
         generateValue: true
