@@ -9,3 +9,10 @@ GMAIL_ACCOUNT="YOUR GMAIL ACCOUNT"
 
 // Get a token from google "App Passwords"
 GMAIL_ACCOUNT_PWD="YOUR PASSWORD TOKEN"
+
+// PostgreSQL database info
+DB_NAME=""
+DB_USER=""
+DB_PASSWORD=""
+DB_HOST=""
+DB_PORT=
