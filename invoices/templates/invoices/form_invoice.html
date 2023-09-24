@@ -3,23 +3,20 @@
 {% load crispy_forms_tags %}
 {% block main %}
 <div class="container">
-<h3 class="mt-4">
+  <h3 class="mt-4">
   Details
 </h3>
-<form class="my-class" method="post">
-  {% crispy invoice_form %}
-  <h4 class="mt-4">
+  <form class="my-class" method="post">
+    {% crispy invoice_form %}
+    <h4 class="mt-4">
     Order
   </h4>
-  {{ order_formset.management_form }}
+    {{ order_formset.management_form }}
   {% for order in order_formset %}
       {% crispy order %}
-      
-
-
   {% endfor %}
-  <button type="submit" class="mt-4 btn btn-primary"  value="Submit">Submit</button>
-</form>
+    <button type="submit" class="mt-4 btn btn-primary"  value="Submit">Submit</button>
+  </form>
 </div>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 <script src="{% static 'invoices/js/dynamic_form.js' %}"></script>

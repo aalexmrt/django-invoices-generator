@@ -1,0 +1,34 @@
+{% load static %}   
+
+{% block navbar %}
+<nav class="navbar navbar-expand-sm navbar-light">
+    <div class="collapse navbar-collapse" id="navbarNavLightDropdown">
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle mobile-nav-text-styles" href="#" id="navbarLightDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Invoices
+          </a>
+          <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarLightDropdownMenuLink">
+              <li><a class="dropdown-item mobile-nav-text-styles" href="{% url 'add_invoice' %}">New invoice</a></li>
+              <li><a class="dropdown-item mobile-nav-text-styles" href="{% url 'view_invoices' %}">View invoices</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle mobile-nav-text-styles" href="#" id="navbarLightDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Customers
+          </a>
+          <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarLightDropdownMenuLink">
+              <li><a class="dropdown-item mobile-nav-text-styles" href="{% url 'add_customer' %}">New customer</a></li>
+              <li><a class="dropdown-item mobile-nav-text-styles" href="{% url 'view_customers' %}">View customers</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavLightDropdown" aria-controls="navbarNavLightDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+</nav>
+
+
+{% endblock %}

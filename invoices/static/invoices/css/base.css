@@ -1,19 +1,114 @@
-.header {
- background-color: #004ec1;
- color: #fff;
- padding: 0.5em;
+:root {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: rgb(18, 18, 18);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+
+  scroll-behavior: smooth;
+
+  --primary-color: rgb(255, 255, 255, 1);
+  --secondary-color: #eeeeee;
+  --two-xl-padding: 12rem;
+  --xl-padding: 10rem;
+  --lg-padding: 6.5rem;
+  --md-padding: 5rem;
+  --sm-padding: 2.5rem;
+  --xs-padding: 2rem;
+
+  --header-height: 4.7rem;
 }
 
-.logo {
- font-size: 24px;
- font-weight: bold;
+html {
+  background-color: var(--primary-color);
 }
 
-.empty-div{
- width: 100%;
-
+#root {
+  background-color: var(--primary-color);
 }
-.dropdown:hover .dropdown-menu {
- display: block;
- margin-top: 0; /* remove the gap so it doesn't close */
+body {
+  background-color: var(--primary-color);
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Make images easier to work with */
+img,
+picture {
+  max-width: 100%;
+  display: block;
+}
+ul {
+  padding-left: 0;
+}
+header {
+  display: grid;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+}
+
+header {
+  background-color: var(--primary-color);
+  box-shadow: #a9a9a9 0px 1px 1px;
+  color: var(--secondary-color);
+}
+
+main {
+  margin-top: var(--header-height);
+  padding-top: 1rem;
+}
+
+.navbar {
+  padding-left: var(--two-xl-padding) !important;
+  padding-right: var(--two-xl-padding) !important;
+}
+
+/* Invoice form add product button */
+.box-btn-add-product {
+  display: flex;
+  flex-direction: column;
+}
+.box-btn-add-product > button {
+  width: min-content;
+}
+
+/* Media queries for responsive headers paddings */
+@media only screen and (max-width: 1440px) {
+  .navbar {
+    padding-left: var(--xl-padding) !important;
+    padding-right: var(--xl-padding) !important;
+  }
+}
+
+@media only screen and (max-width: 976px) {
+  .navbar {
+    padding-left: var(--lg-padding) !important;
+    padding-right: var(--lg-padding) !important;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .navbar {
+    padding-left: var(--md-padding) !important;
+    padding-right: var(--md-padding) !important;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .navbar {
+    padding-left: var(--sm-padding) !important;
+    padding-right: var(--sm-padding) !important;
+  }
 }

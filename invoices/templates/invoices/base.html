@@ -1,62 +1,34 @@
-<!DOCTYPE html>
-{% load bootstrap5 %}
-{% load static %}
-
+<!doctype html>
+{% load bootstrap5 %} {% load static %}
 <html lang="en">
-<head>
-  <title>Invoices App</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/x-icon" href="{% static 'invoices/images/favicon.ico' %}">
-  <link rel="stylesheet" href="{% static 'invoices/css/base.css' %}">
-  {% block css %}
-  <!-- Additional CSS files specific to each template -->
-  {% endblock %}
-  {% bootstrap_css %}
-  {% bootstrap_javascript %}
-</head>
+  <head>
+    <title>Invoices App</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'invoices/images/favicon.ico' %}"
+    />
 
-<body>
-  
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid p-2">
-    <a class="navbar-brand" href="{% url 'view_invoices' %}">Invoices App</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Invoices
-          </a>
-          <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
-            <li><a class="dropdown-item" href="{% url 'add_invoice' %}">New item</a></li>
-            <li><a class="dropdown-item" href="{% url 'view_invoices' %}">View</a></li>
-          </ul>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Customers
-          </a>
-          <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
-            <li><a class="dropdown-item" href="{% url 'add_customer' %}">New item</a></li>
-            <li><a class="dropdown-item" href="{% url 'view_customers' %}">View</a></li>
-          </ul>
-        </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  </nav>
+    {% block css %} {% bootstrap_css %} {% bootstrap_javascript %}
+    <link rel="stylesheet" href="{% static 'invoices/css/base.css' %}" />
+    <link rel="stylesheet" href="{% static 'invoices/css/navbar.css' %}" />
+    <!-- Additional CSS files specific to each template -->
+    {% endblock %}
+  </head>
 
-  {% block main %}
+  <body>
+    <header>{% include 'invoices/navbar.html' %}</header>
+    <main class="container-fluid">
+    {% block main %}
     <!-- Here goes the content of the page -->
-  {% endblock %}
-
-  {% block javascript %}
+    {% endblock %}
+    </main>
+    {% block javascript %}
     <!-- Additional JavaScript files specific to each template -->
-  {% endblock %}
+    {% endblock %}
 
-</body>
+
+  </body>
 </html>
