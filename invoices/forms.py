@@ -54,10 +54,9 @@ class OrderLineForm(ModelForm):
                 Column('unit_price',
                        css_class='form-group col-lg-3 col-md-3 col-sm-3 mb-0'),
                 Div(
-                    Div(
-                        HTML("""<label class='empty-div form-label'>&nbsp</label>
-                    <button type="button" class="buttonDynamic">Dynamic</button>""")
-                    ), css_class="form-group col-lg-1 col-md-1 col-sm-1 mb-0"), css_class="formsetDynamic"
+                    HTML("""<label class='empty-div form-label'>&nbsp</label>
+                    <button type="button" class="buttonDynamic">Dynamic</button>"""),
+                     css_class="form-group col-lg-1 col-md-1 col-sm-1 mb-0 box-btn-add-product"), css_class="formsetDynamic"
             )
         )
 
