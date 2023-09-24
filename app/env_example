@@ -3,6 +3,7 @@
 // Do not change this file, adding your GITHUB TOKEN here!
 // Use cp or mv (like this: cp env.example .env), then edit .env with your GITHUB TOKEN.
 // IMPORTANT: Don't forget to add to update your .gitignore with .env (to avoid making your key public!)
+// Force push
 
 GMAIL_ACCOUNT="YOUR GMAIL ACCOUNT"
 
