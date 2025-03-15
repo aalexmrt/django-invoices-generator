@@ -80,11 +80,15 @@ def add_attachment(sender_name, files_queryset, msg_mixed):
 
 
 def config_mail_server(email_account, email_pwd):
-
+    server = None
     try:
         smtp_server = 'smtp.gmail.com'
         smtp_port = 587
         context = ssl.create_default_context()
+        # Disable certificate verification for development
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+        
         server = smtplib.SMTP(smtp_server, smtp_port)
         server.ehlo()
         server.starttls(context=context)
@@ -95,6 +99,7 @@ def config_mail_server(email_account, email_pwd):
 
     except Exception as e:
         print("Error configuring the server:", str(e))
+        return None
 
 
 def send_invoice_email(email_account, email_pwd, sender_name, contact_email, contact_name, cc_emails_list, files_queryset):
@@ -106,8 +111,14 @@ def send_invoice_email(email_account, email_pwd, sender_name, contact_email, con
                             sender_name, email_account, cc_emails_list, files_queryset)
     receiver_email = cc_emails_list.split(",") + [contact_email]
     msg_status = None
+    server = None
+    
     try:
         server = config_mail_server(email_account, email_pwd)
+        if server is None:
+            print("Failed to configure mail server")
+            return False
+            
         server.sendmail(msg_mixed['From'],
                         receiver_email, msg_mixed.as_string())
 
@@ -119,6 +130,7 @@ def send_invoice_email(email_account, email_pwd, sender_name, contact_email, con
         print(err)
         msg_status = False
     finally:
-        server.quit()
+        if server is not None:
+            server.quit()
 
     return msg_status

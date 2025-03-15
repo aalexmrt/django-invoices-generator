@@ -22,7 +22,7 @@ env.read_env()
 
 
 def view_invoices(request):
-    invoices_list = Invoice.objects.order_by('-number')
+    invoices_list = Invoice.objects.order_by('-sequence', '-number')
     context = {
         'invoices_list': invoices_list
     }
